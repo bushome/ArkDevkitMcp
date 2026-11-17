@@ -1,0 +1,27 @@
+{
+  // DevKit install folder. Used to find the project's DefaultEngine.ini.
+  "devkit_root": "E:\\ARKDevkit",
+
+  // Project folder under <devkit_root>\Projects. Also preferred when more than one editor answers.
+  "project": "ShooterGame",
+
+  // Remote execution network settings. Empty / -1 = read them from
+  // <devkit_root>\Projects\<project>\Config\DefaultEngine.ini (what the editor itself uses),
+  // falling back to Epic's defaults (239.0.0.1:6766, 127.0.0.1, TTL 0).
+  "multicast_group_endpoint": "",
+  "multicast_bind_address": "",
+  "multicast_ttl": -1,
+
+  // Address the editor connects back to for commands. A free port is picked each time.
+  "command_bind_address": "127.0.0.1",
+
+  // How long to wait for the editor to answer pings, and to open the command connection.
+  "discovery_timeout_seconds": 5,
+  "connect_timeout_seconds": 15,
+
+  // Longest a single command may run (compiling a large Blueprint can take a while).
+  "command_timeout_seconds": 120,
+
+  // Tool replies longer than this are cut off, so huge listings do not flood the conversation.
+  "max_output_chars": 60000
+}

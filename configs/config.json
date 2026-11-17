@@ -1,0 +1,12 @@
+{
+  "devkit_root": "E:\\ARKDevkit",
+  "project": "ShooterGame",
+  "multicast_group_endpoint": "",
+  "multicast_bind_address": "",
+  "multicast_ttl": -1,
+  "command_bind_address": "127.0.0.1",
+  "discovery_timeout_seconds": 5,
+  "connect_timeout_seconds": 15,
+  "command_timeout_seconds": 120,
+  "max_output_chars": 60000
+}
