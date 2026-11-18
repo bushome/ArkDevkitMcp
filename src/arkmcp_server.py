@@ -32,7 +32,8 @@ def main(argv):
     try:
         if "--check" in argv:
             try:
-                status = _status(link, settings)
+                with link.session():
+                    status = _status(link, settings)
                 print(json.dumps(status, indent=1, default=str))
                 return 1 if "problem" in status else 0
             except LinkError as e:

@@ -107,6 +107,9 @@ Backups and raw evidence:
 Earlier native audit:
 `C:\Dev\Tools\ADKUEPluginBuilds-Dev\Backups\tooling-checks-20261117\COMPATIBILITY-REPORT.md`
 
-No user action is required for the connections tested here. Python is the
+This is a historical snapshot. See the [remaining-work follow-up](VALIDATION-FOLLOWUP-2026-11-17.md)
+for subsequent fixes, the expanded suite and current client restart instructions.
+
+No user action was required for the connections tested in this initial pass. Python is the
 verified path for the graph-editing capabilities exercised in this pass.
 

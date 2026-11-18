@@ -15,7 +15,7 @@ sys.path.insert(0, os.path.join(ROOT, "src"))
 
 from arkmcp import config, protocol, typespec  # noqa: E402
 from arkmcp.mcp import McpServer  # noqa: E402
-from arkmcp.ue_link import call_expression, editor_module_source, installer_script  # noqa: E402
+from arkmcp.ue_link import LinkError, UnrealLink, call_expression, editor_module_source, installer_script  # noqa: E402
 
 FAILS = []
 
@@ -407,6 +407,37 @@ def test_layout():
     check(set(cyc) == {"A", "B"}, "cycles do not hang the layout")
 
 
+def test_connection_failures():
+    settings = dict(config.DEFAULTS, multicast_group_endpoint='239.0.0.1:6766', multicast_bind_address='127.0.0.1')
+    class Socket:
+        sends = 0
+        closed = False
+        def sendall(self, payload):
+            self.sends += 1
+            if self.fail_send:
+                raise OSError('delivery uncertain')
+        def close(self):
+            self.closed = True
+        def settimeout(self, timeout):
+            pass
+        def recv(self, count):
+            return b''
+    for fail_send in (True, False):
+        link = UnrealLink(settings, lambda msg: None)
+        sock = Socket()
+        sock.fail_send = fail_send
+        link._tcp, link._remote, link._installed = sock, {'node_id':'test-editor'}, True
+        link.connect = lambda: None
+        link._send_udp = lambda *args: None
+        try:
+            link.run('mutate_once()')
+            check(False, 'lost reply must be reported')
+        except LinkError as exc:
+            check('may have run' in str(exc), 'uncertain completion is explicit')
+        check(sock.sends == 1, 'a mutation is never replayed after a transport failure')
+        check(sock.closed and not link.connected and not link._installed, 'lost connection clears socket and helper state')
+
+
 def test_shipped():
     plain = config.load_json_with_comments(os.path.join(ROOT, "configs", "config.json"))
     commented = config.load_json_with_comments(os.path.join(ROOT, "configs", "config.commented.json"))
@@ -416,7 +447,7 @@ def test_shipped():
 
 
 if __name__ == "__main__":
-    for t in (test_typespec, test_config, test_protocol, test_mcp, test_editor_module, test_tool_table, test_layout):
+    for t in (test_typespec, test_config, test_protocol, test_mcp, test_editor_module, test_tool_table, test_layout, test_connection_failures):
         t()
     if "--shipped" in sys.argv:
         test_shipped()

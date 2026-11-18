@@ -1,10 +1,13 @@
 """Connection to a running DevKit editor over Unreal's Python remote execution."""
 
 import json
+import contextlib
+import hashlib
 import os
 import socket
 import threading
 import time
+import tempfile
 import uuid
 
 from . import VERSION, protocol
@@ -133,6 +136,50 @@ class UnrealLink:
     def describe(self):
         return dict(self._remote) if self._remote else None
 
+    @contextlib.contextmanager
+    def session(self):
+        """Serialize local clients and release Unreal's single command channel.
+
+        Keep helper installation and its tool call in the same lease. A client
+        must not retain a TCP connection after another client acquires the editor.
+        """
+        key = (os.path.normcase(os.path.abspath(self.s.get("devkit_root", ""))) +
+               "|" + self.s.get("project", "").casefold()).encode("utf-8")
+        name = "arkmcp-editor-" + hashlib.sha256(key).hexdigest()[:24] + ".lock"
+        with open(os.path.join(tempfile.gettempdir(), name), "a+b") as lease:
+            lease.seek(0, os.SEEK_END)
+            if lease.tell() == 0:
+                lease.write(b"0")
+                lease.flush()
+            if os.name == "nt":
+                import msvcrt
+                def acquire():
+                    lease.seek(0)
+                    msvcrt.locking(lease.fileno(), msvcrt.LK_NBLCK, 1)
+                def release():
+                    lease.seek(0)
+                    msvcrt.locking(lease.fileno(), msvcrt.LK_UNLCK, 1)
+            else:
+                import fcntl
+                def acquire():
+                    fcntl.flock(lease, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                def release():
+                    fcntl.flock(lease, fcntl.LOCK_UN)
+            deadline = time.monotonic() + float(self.s["command_timeout_seconds"])
+            while True:
+                try:
+                    acquire()
+                    break
+                except OSError:
+                    if time.monotonic() >= deadline:
+                        raise LinkError("Another local MCP client is using the editor; wait for its command to finish.")
+                    time.sleep(0.05)
+            try:
+                yield
+            finally:
+                self.close()
+                release()
+
     def connect(self):
         if self._tcp:
             return
@@ -206,18 +253,19 @@ class UnrealLink:
                                   {"command": command, "unattended": True, "exec_mode": mode})
         try:
             self._tcp.sendall(payload)
-        except OSError:
-            # Connection went stale (editor restarted). Nothing ran, so reconnect and send once more.
+        except OSError as e:
+            # sendall can fail after sending part or all of a command. Never
+            # replay an asset mutation when completion is uncertain.
             self.close()
-            self.connect()
-            self._tcp.sendall(payload)
+            raise LinkError(f"Could not send the editor command: {e}. It may have run; read back state before retrying.")
         self._tcp.settimeout(float(timeout or self.s["command_timeout_seconds"]))
         decoder = protocol.StreamDecoder()
         try:
             while True:
                 chunk = self._tcp.recv(65536)
                 if not chunk:
-                    raise LinkError("The editor closed the connection (did it crash or close?).")
+                    self.close()
+                    raise LinkError("The editor closed the connection before replying. The command may have run; read back state before retrying.")
                 msg = decoder.feed(chunk)
                 if msg and protocol.is_for(msg, self.node_id) and msg["type"] == protocol.TYPE_COMMAND_RESULT:
                     return msg.get("data") or {}
@@ -227,7 +275,7 @@ class UnrealLink:
                             "finished; check the editor before repeating anything that changes assets.")
         except OSError as e:
             self.close()
-            raise LinkError(f"Lost the editor connection: {e}")
+            raise LinkError(f"Lost the editor connection: {e}. The command may have run; read back state before retrying.")
 
     def ensure_module(self):
         if self._installed:
@@ -242,7 +290,7 @@ class UnrealLink:
         self.connect()
         self.ensure_module()
         data = self.run(call_expression(tool, args), protocol.MODE_EVAL_STATEMENT)
-        if not data.get("success") and EDITOR_MODULE in str(data.get("result")):
+        if not data.get("success") and ("ModuleNotFoundError: No module named '" + EDITOR_MODULE + "'") in str(data.get("result")):
             self._installed = False  # editor's Python was reset; push the module again
             self.ensure_module()
             data = self.run(call_expression(tool, args), protocol.MODE_EVAL_STATEMENT)

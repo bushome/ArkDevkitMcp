@@ -154,9 +154,31 @@ INSTRUCTIONS = (
     "into their pins; results drop down onto stacked horizontal output lanes that run right to the node collecting "
     "them; modules stack as rows, wrapped with Sequence (Then 1 runs back left and down to start the next row); "
     "Branch alternatives get their own row. Never re-lay out a user's existing graph; only position what you add "
-    "(tidy_graph with nodes=...), keep wires running forward, and never put a node on top of another node or wire. If a graph tool reports that no signature matched, use api_help on the named function and then "
+    "(tidy_graph with nodes=...), keep wires running forward, and never put a node on top of another node or wire. "
+    "Use refit_comment only on an explicitly named comment and node selection. Use route_bus for shared data "
+    "lanes with explicit tap coordinates; existing connected inputs are refused. If a graph tool reports that no signature matched, use api_help on the named function and then "
     "run_python. ARK mods cannot contain C++; everything here is Blueprint/data editing."
 )
+
+TOOLS.append({"name": "refit_comment",
+              "description": "Resize one named comment around explicitly selected nodes after layout. Only the comment moves; graph nodes and wires are preserved.",
+              "inputSchema": _schema({"path": PATH, "graph": GRAPH, "node": NODE,
+                                       "nodes": {"type": "array", "items": NODE, "minItems": 1},
+                                       "padding": {"type": "integer", "minimum": 0}},
+                                      ["path", "node", "nodes"])})
+
+TOOLS.extend([
+    {"name": "create_blueprint", "description": "Create an unsaved Blueprint in a full mod/package path. Refuses to replace an existing asset. Parent defaults to Actor.",
+     "inputSchema": _schema({"path": PATH, "parent_class": {"type": S}}, ["path"])},
+    {"name": "add_reroute", "description": "Add one reroute knot at explicit x/y coordinates. Use connect_pins for data or execution wires.",
+     "inputSchema": _schema({"path": PATH, "graph": GRAPH, "x": {"type": "integer"}, "y": {"type": "integer"}}, ["path", "x", "y"])},
+    {"name": "route_bus", "description": "Route one shared data output along a horizontal bus with explicit left-to-right tap positions. Only new reroutes and wires are created. Existing connected destinations are refused. Does not move existing nodes. Execution flow requires Sequence and explicit reroutes.",
+     "inputSchema": _schema({"path": PATH, "graph": GRAPH, "from_node": NODE, "from_pin": {"type": S},
+                              "y": {"type": "integer"},
+                              "taps": {"type": "array", "minItems": 1, "maxItems": 64,
+                                       "items": _schema({"node": NODE, "pin": {"type": S}, "x": {"type": "integer"}}, ["node", "pin", "x"])}},
+                             ["path", "from_node", "from_pin", "y", "taps"])}
+])
 
 EDITOR_TOOLS = {t["name"] for t in TOOLS} - {"editor_status", "run_python"}
 
@@ -170,7 +192,7 @@ def _clip(text, limit):
 def make_handler(link, settings, log):
     limit = int(settings["max_output_chars"])
 
-    def handler(name, args):
+    def dispatch(name, args):
         try:
             if name == "editor_status":
                 return _clip(json.dumps(_status(link, settings), indent=1, default=str), limit), False
@@ -193,6 +215,13 @@ def make_handler(link, settings, log):
             return str(e), True
         except KeyError as e:
             return f"Missing argument {e}", True
+
+    def handler(name, args):
+        try:
+            with link.session():
+                return dispatch(name, args)
+        except LinkError as e:
+            return str(e), True
 
     return handler
 

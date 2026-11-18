@@ -157,6 +157,7 @@ standalone Python:
 | `find_assets` | Assets under a path, filtered by class and name |
 | `get_properties`, `set_properties` | Read/write editable properties of an asset, a Blueprint's Class Defaults (incl. Blueprint variables), a class (`..._C`) or a level actor (`actor:<label>`) |
 | `save_assets` | Explicitly save selected assets to disk |
+| `create_blueprint` | Create a Blueprint at a full package path; refuses to overwrite an existing asset |
 | `blueprint_info` | Parent class, graphs, variables (type, category, default), functions, events, dispatchers |
 | `compile_blueprint` | Compile and list nodes with errors/warnings |
 | `add_variable`, `remove_variable` | Member variables; type syntax below |
@@ -168,6 +169,8 @@ standalone Python:
 | `set_pin_value` | Literal value of an unconnected input pin |
 | `move_node`, `remove_nodes`, `add_node_pin` | Layout, delete, add pins to Sequence/Switch/Make Array/math nodes |
 | `tidy_graph` | Place selected new nodes around an existing layout; `dry_run=true` previews positions |
+| `refit_comment` | Resize one named comment around an explicit node selection without moving graph nodes |
+| `add_reroute`, `route_bus` | Add individual knots or an explicitly positioned horizontal data bus; preserve existing connections |
 
 Variable types: `bool`, `int`, `byte`, `real` (`float`/`double`), `name`, `string`, `text`,
 `object:/Script/Engine.Actor`, `class:/MyMod/BP_Y.BP_Y_C`, `struct:/Script/CoreUObject.Vector`,
@@ -222,9 +225,11 @@ was refused as required. See [live validation](docs/VALIDATION-2026-11-17.md) fo
 
 Known gaps and limits:
 
-- `list_graph` returns K2 nodes and omits comment boxes; layout does not refit comments.
-- Dedicated asset creation and bus-lane tools are not implemented. Asset creation used `run_python`;
-  reroutes work through `add_node(kind="action", name="|AddRerouteNode...")`.
+- Comments now appear in `list_graph` with bounds and a stable GUID. New comment GUIDs are initialized before
+  saving. Use `refit_comment` explicitly after positioning nodes; existing comments are not moved automatically.
+- `create_blueprint`, `add_reroute` and `route_bus` provide dedicated creation/routing tools. A data bus refuses
+  connected destinations, implicit type conversion and tap positions overlapping nodes. Execution routing uses
+  Sequence plus explicit reroutes. No existing graph is automatically rearranged.
 - Node dimensions are estimates because this DevKit returns placeholder sizes; layout needs further
   calibration against manual placements.
 
@@ -257,6 +262,19 @@ Stand-alone (no editor, any Python 3.11+): type specs, config/ini parsing, the r
 format, the MCP server, and the editor module run against a fake `unreal`. `--shipped` also checks that
 `config.json` and `config.commented.json` hold the same values.
 
+With the DevKit open, the live regression suite creates a unique disposable Blueprint, checks persistence,
+all 14 `add_node` kinds, comments, routing, error recovery and reference-asset preservation, then deletes its
+fixture:
+
+```
+py -3.11 tests\live_acceptance.py C:\Dev\Tools\ArkDevkitMcp\live-results
+```
+
+Python remote execution permits one command connection per editor. Updated servers coordinate through a local
+lock and release the connection after each tool call. Restart existing Python MCP clients after updating so
+they use this behavior and discover all 27 tools. Commands are never replayed automatically after uncertain
+delivery; read back state before repeating a mutation.
+
 For explicit live diagnostics with the editor open:
 
 ```
@@ -268,6 +286,8 @@ Feed one JSON command per line, for example
 The client records the actual stdio exchange and performs only the operations supplied.
 
 ## Files
+
+Current results and remaining limits: [remaining-work validation](docs/VALIDATION-FOLLOWUP-2026-11-17.md).
 
 | Path | Purpose |
 |---|---|

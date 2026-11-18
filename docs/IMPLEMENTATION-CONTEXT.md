@@ -23,3 +23,8 @@ The live comparison is complete: [November 17 validation](VALIDATION-2026-11-17.
 records 47 passing readback checks across all 23 advertised tool names, plus
 the remaining comment-node warning and native ABI blockers. Reroute creation
 and wiring work through the existing palette action.
+
+The [remaining-work follow-up](VALIDATION-FOLLOWUP-2026-11-17.md) supersedes those
+Python gaps: 27 tools, fixed comment GUID/listing/refit behavior, dedicated asset
+creation and reroute/data-bus tools, all 14 node kinds checked, and coordinated
+local remote-execution clients. Native ABI limits remain separately documented.

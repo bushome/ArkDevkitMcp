@@ -230,7 +230,12 @@ def _graph_names(bp):
 
 
 def _nodes(ge):
-    return [n for n in _as_list(_ge_fn(ge, "list_all_nodes")) if isinstance(n, unreal.Object)]
+    nodes = [n for n in _as_list(_ge_fn(ge, "list_all_nodes")) if isinstance(n, unreal.Object)]
+    # The 5.8 graph API lists K2 nodes and comments separately.
+    comments = _safe(lambda: _ge_fn(ge, "list_comment_nodes"), [])
+    seen = {n.get_name() for n in nodes}
+    nodes.extend(n for n in _as_list(comments) if isinstance(n, unreal.Object) and n.get_name() not in seen)
+    return nodes
 
 
 def _node(ge, node_id):
@@ -308,6 +313,15 @@ def _node_info(ge, node, include_pins, warnings):
         inside = _safe(lambda: _as_list(_lib_fn("get_nodes_in_comment", node)), None)
         if inside:
             info["contains"] = [n.get_name() for n in inside if isinstance(n, unreal.Object)]
+        info["pos"] = _safe(lambda: [int(node.wc_get_property_value("NodePosX")),
+                                     int(node.wc_get_property_value("NodePosY"))], None, warnings)
+        size = _safe(lambda: node.get_node_size(), None, warnings)
+        if size is not None:
+            info["size"] = [int(size.x), int(size.y)]
+        guid = _safe(lambda: node.wc_get_property_value("NodeGuid"), None)
+        if guid is not None:
+            info["guid_valid"] = _safe(lambda: unreal.GuidLibrary.is_valid_guid(guid), None)
+            info["guid"] = _safe(lambda: guid.export_text(), None)
         return info
     title = _safe(lambda: _node_fn(ge, "get_node_title", node), None, warnings)
     if title is not None:
@@ -332,6 +346,12 @@ def _get_pos(ge, node):
 
 
 def _set_pos(ge, node, x, y):
+    if not _is_k2(node):
+        node.modify()
+        cdo = unreal.get_default_object(unreal.SystemLibrary)
+        for prop, value in (("NodePosX", int(x)), ("NodePosY", int(y))):
+            cdo.call_method("SetIntPropertyByName", args=(node, prop, value))
+        return
     for pos in (unreal.IntPoint(int(x), int(y)), unreal.Vector2D(float(x), float(y))):
         try:
             _node_fn(ge, "set_node_pos", node, pos)
@@ -662,6 +682,27 @@ def _positions(x, y):
     return [unreal.Vector2D(float(x), float(y)), unreal.IntPoint(int(x), int(y))]
 
 
+def _component_template(bp, name):
+    subsystem = unreal.get_engine_subsystem(unreal.SubobjectDataSubsystem)
+    library = unreal.SubobjectDataBlueprintFunctionLibrary
+    matches, available = {}, set()
+    for handle in subsystem.k2_gather_subobject_data_for_blueprint(bp):
+        data = library.get_data(handle)
+        component = library.get_associated_object(data)
+        if not isinstance(component, unreal.ActorComponent):
+            continue
+        variable = str(library.get_variable_name(data))
+        available.add(variable)
+        aliases = (variable, component.get_name(), component.get_path_name(),
+                   component.get_name().removesuffix("_GEN_VARIABLE"))
+        if str(name).casefold() in {s.casefold() for s in aliases}:
+            # Gather can expose the same template through multiple handles.
+            matches[component.get_path_name()] = component
+    if len(matches) != 1:
+        raise ToolError(f"component {name!r} was not uniquely found; components: {sorted(available)}")
+    return next(iter(matches.values()))
+
+
 def _make_node(ge, bp, a):
     kind = a["kind"]
     x, y = a.get("x", 0), a.get("y", 0)
@@ -702,7 +743,7 @@ def _make_node(ge, bp, a):
     if kind == "dispatcher_event":
         return _ge_fn(ge, "add_dispatcher_event_node", a["name"])
     if kind == "component_event":
-        return _ge_fn(ge, "add_component_bound_event_node", a["component"], a["name"])
+        return _ge_fn(ge, "add_component_bound_event_node", _component_template(bp, a["component"]), a["name"])
     if kind == "comment":
         x, y = a.get("x", 0), a.get("y", 0)
         w, h = a.get("width", 400), a.get("height", 200)
@@ -721,6 +762,17 @@ def t_add_node(a):
             node = next((n for n in node if isinstance(n, unreal.Object)), None)
         if not isinstance(node, unreal.Object):
             raise ToolError("the editor did not create a node (check the name/path)")
+        if a["kind"] == "comment":
+            # This DevKit's AddCommentNode omits CreateNewGuid. The Wildcard
+            # getter returns a live struct wrapper; assign through that wrapper
+            # because NodeGuid is protected from set_editor_property.
+            guid = node.wc_get_property_value("NodeGuid")
+            if not unreal.GuidLibrary.is_valid_guid(guid):
+                node.modify()
+                guid.assign(unreal.GuidLibrary.new_guid())
+                if not unreal.GuidLibrary.is_valid_guid(node.wc_get_property_value("NodeGuid")):
+                    _ge_fn(ge, "remove_comment_node", node)
+                    raise ToolError("comment GUID could not be initialized; comment removed")
         if a["kind"] != "comment" and ("x" in a or "y" in a):
             _set_pos(ge, node, a.get("x", 0), a.get("y", 0))
     w = {}
@@ -779,8 +831,135 @@ def t_remove_nodes(a):
     ge = _graph_editor(bp, a.get("graph"))
     nodes = [_node(ge, n) for n in a["nodes"]]
     with unreal.ScopedEditorTransaction("ArkDevkitMcp: remove nodes"):
-        _ge_fn(ge, "remove_nodes", nodes)
+        k2 = [n for n in nodes if _is_k2(n)]
+        if k2:
+            _ge_fn(ge, "remove_nodes", k2)
+        for node in nodes:
+            if not _is_k2(node):
+                _ge_fn(ge, "remove_comment_node", node)
     return {"removed": [n for n in a["nodes"]]}
+
+
+def _estimated_bounds(ge, node):
+    info = _node_info(ge, node, True, {})
+    pins = {d: [(p["name"], p.get("type", ""), p.get("value"), bool(p.get("links")))
+                for p in info.get("pins", []) if p["dir"] == d and p["name"] != "OutputDelegate"]
+            for d in ("in", "out")}
+    adv = str(_safe(lambda: node.wc_get_property_value("AdvancedPinDisplay"), "")).upper()
+    state = str(_safe(lambda: node.wc_get_property_value("EnabledState"), "")).upper()
+    w, h = estimate_node_size(info["class"], info.get("title", info["id"]), pins["in"], pins["out"],
+                              advanced_hidden="HIDDEN" in adv, dev_only="DEVELOPMENT_ONLY" in state)
+    x, y = info["pos"]
+    return x, y, x+w, y+h
+
+
+def t_refit_comment(a):
+    bp = _blueprint(a["path"])
+    ge = _graph_editor(bp, a.get("graph"))
+    comment = _node(ge, a["node"])
+    if comment.get_class().get_name() != "EdGraphNode_Comment":
+        raise ToolError("node must be a comment box")
+    members = [_node(ge, name) for name in a["nodes"]]
+    if not members or any(not _is_k2(n) for n in members):
+        raise ToolError("nodes must contain at least one K2 node")
+    padding = int(a.get("padding", 50))
+    if padding < 0:
+        raise ToolError("padding must be nonnegative")
+    boxes = [_estimated_bounds(ge, node) for node in members]
+    x, y = int(min(b[0] for b in boxes))-padding, int(min(b[1] for b in boxes))-padding-32
+    right, bottom = int(max(b[2] for b in boxes))+padding, int(max(b[3] for b in boxes))+padding
+    with unreal.ScopedEditorTransaction("ArkDevkitMcp: refit comment"):
+        comment.modify()
+        cdo = unreal.get_default_object(unreal.SystemLibrary)
+        for prop, value in (("NodePosX", x), ("NodePosY", y), ("NodeWidth", right-x), ("NodeHeight", bottom-y)):
+            # These reflected engine setters have no generated Python glue.
+            cdo.call_method("SetIntPropertyByName", args=(comment, prop, value))
+        if any(int(comment.wc_get_property_value(prop)) != value for prop, value in
+               (("NodePosX", x), ("NodePosY", y), ("NodeWidth", right-x), ("NodeHeight", bottom-y))):
+            raise ToolError("comment bounds did not match the requested bounds")
+    return {"comment": _node_info(ge, comment, False, {}), "nodes": a["nodes"], "saved": False}
+
+
+def t_create_blueprint(a):
+    path = a["path"].rstrip("/")
+    if not _re.fullmatch(r"/[A-Za-z0-9_]+(?:/[A-Za-z0-9_]+)+", path):
+        raise ToolError("path must be a full package path, without an object or file suffix")
+    if unreal.EditorAssetLibrary.does_asset_exist(path):
+        raise ToolError(f"asset already exists: {path}; refusing to replace it")
+    parent = unreal.load_class(None, a.get("parent_class", "/Script/Engine.Actor"))
+    if parent is None:
+        raise ToolError("parent class was not found")
+    folder, name = path.rsplit("/", 1)
+    factory = unreal.BlueprintFactory()
+    factory.set_editor_property("parent_class", parent)
+    with unreal.ScopedEditorTransaction("ArkDevkitMcp: create Blueprint"):
+        bp = unreal.AssetToolsHelpers.get_asset_tools().create_asset(name, folder, unreal.Blueprint, factory)
+    if bp is None:
+        raise ToolError("Unreal refused to create the Blueprint")
+    return {"created": bp.get_path_name(), "saved": False}
+
+
+def t_add_reroute(a):
+    return t_add_node({**a, "kind": "action", "name": "|AddRerouteNode..."})
+
+
+def t_route_bus(a):
+    bp = _blueprint(a["path"])
+    ge = _graph_editor(bp, a.get("graph"))
+    source = _find_pin(ge, _node(ge, a["from_node"]), a["from_pin"], "out")
+    source_type = str(_pin_fn("get_pin_type_display_string", source)).lower()
+    if source_type == "exec" or "delegate" in source_type:
+        raise ToolError("route_bus supports data pins; use Sequence and explicit reroutes for execution flow")
+    taps = a["taps"]
+    if not taps or len(taps) > 64:
+        raise ToolError("taps must contain between 1 and 64 destinations")
+    destinations, seen = [], set()
+    for tap in taps:
+        key = (tap["node"], tap["pin"])
+        if key in seen:
+            raise ToolError("duplicate bus destination")
+        seen.add(key)
+        pin = _find_pin(ge, _node(ge, tap["node"]), tap["pin"], "in")
+        if _as_list(_pin_fn("list_connected_pins", pin)):
+            raise ToolError(f"destination {key} is already connected; existing wiring was preserved")
+        destination_type = str(_pin_fn("get_pin_type_display_string", pin)).lower()
+        if destination_type not in (source_type, "wildcard"):
+            raise ToolError(f"bus types must match without implicit conversion: {source_type} -> {destination_type}")
+        if _pin_fn("can_create_connection", source, pin) is False:
+            raise ToolError(f"incompatible bus destination: {key}")
+        destinations.append((tap, pin))
+    if any(int(taps[i]["x"]) >= int(taps[i+1]["x"]) for i in range(len(taps)-1)):
+        raise ToolError("tap x positions must increase from left to right")
+    obstacles = [_estimated_bounds(ge, n) for n in _nodes(ge) if _is_k2(n)]
+    for tap in taps:
+        x, y = int(tap["x"]), int(a["y"])
+        if any(x < r and x+32 > l and y < b and y+16 > t for l,t,r,b in obstacles):
+            raise ToolError("a bus tap would overlap an existing node; choose another x/y position")
+        obstacles.append((x,y,x+32,y+16))
+    made = []
+    with unreal.ScopedEditorTransaction("ArkDevkitMcp: route data bus"):
+        try:
+            previous = source
+            for tap, destination in destinations:
+                knot = _make_node(ge, bp, {"kind": "action", "name": "|AddRerouteNode...",
+                                           "x": int(tap["x"]), "y": int(a["y"])})
+                if not isinstance(knot, unreal.Object):
+                    raise ToolError("Unreal did not create the reroute")
+                made.append(knot)
+                _set_pos(ge, knot, tap["x"], a["y"])
+                inlet = _find_pin(ge, knot, "InputPin", "in")
+                outlet = _find_pin(ge, knot, "OutputPin", "out")
+                if not _pin_fn("try_create_connection", previous, inlet):
+                    raise ToolError("could not connect bus segment")
+                if not _pin_fn("try_create_connection", outlet, destination):
+                    raise ToolError("could not connect bus tap")
+                previous = outlet
+        except Exception:
+            if made:
+                _ge_fn(ge, "remove_nodes", made)
+            raise
+    return {"reroutes": [_node_info(ge, n, True, {}) for n in made], "taps": taps,
+            "saved": False, "note": "existing node positions and existing connections were preserved"}
 
 
 def t_add_pin(a):
@@ -894,6 +1073,10 @@ TOOLS = {
     "move_node": t_move_node,
     "remove_nodes": t_remove_nodes,
     "add_node_pin": t_add_pin,
+    "refit_comment": t_refit_comment,
+    "create_blueprint": t_create_blueprint,
+    "add_reroute": t_add_reroute,
+    "route_bus": t_route_bus,
     "tidy_graph": t_tidy_graph,
 }
 
