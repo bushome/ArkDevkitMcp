@@ -23,8 +23,13 @@ DevKit.
 **Status: in development, with a working live editor connection.** On November 17, 2026, Codex connected
 through MCP to the ShooterGame DevKit **5.8.3**, executed Python **3.11.9** inside the editor, and confirmed
 that `BlueprintEditorLibrary`, `BlueprintGraphEditor` and `BlueprintGraphPinLibrary` are available.
-It also found the training Blueprint at `/ArkMCPTesting/BP_McpTest1`. This connection check was read-only.
-Earlier live sessions exercised Blueprint editing and layout; see Validation and known gaps below.
+It also found the training Blueprint at `/ArkMCPTesting/BP_McpTest1`. Subsequent live tests through the
+actual stdio server exercised Blueprint editing, graph layout, saving and package reload on disposable
+content; see Validation and known gaps below. The training Blueprint was read only.
+
+The imported implementation history and the native/Python comparison-test plan
+are recorded in [Implementation context](docs/IMPLEMENTATION-CONTEXT.md). The Python
+path is functional; native reconstructed-header incompatibilities are assessed separately.
 
 ## How it works
 
@@ -200,8 +205,9 @@ Example requests once connected:
 
 ## Validation and known gaps
 
-The November 17 Codex check verified connection, editor Python execution, graph API availability and
-training asset discovery. It did not repeat editing tests or save assets.
+The November 17 live comparison verified the actual stdio MCP handshake/tool discovery, connection,
+editor Python execution, graph API availability and mod-root asset discovery. It repeated editing tests
+on a disposable Blueprint, saved it and verified defaults after reloading its package from disk.
 
 Earlier live testing on a scratch Blueprint exercised asset discovery, API help, Blueprint inspection,
 graph and palette listing, variable creation (including defaults and `array<string>`), function creation,
@@ -209,13 +215,16 @@ node creation (function calls, variable getters, branches, palette actions, comm
 exec/data connections, pin values, Class Defaults read/write, node movement/removal, layout and compilation
 (`BS_UP_TO_DATE`).
 
-Known gaps and remaining live checks:
+The previously untested `disconnect_pins` (single link and all links), `add_node_pin` (Sequence),
+event overrides, `remove_variable` and `save_assets` now pass. Full layout was tested only on scratch
+content; selected-node layout preserved other node positions and wiring. Full layout with reroutes
+was refused as required. See [live validation](docs/VALIDATION-2026-11-17.md) for scope and evidence.
 
-- `disconnect_pins`, `add_node_pin`, event overrides, `remove_variable` and `save_assets` were not exercised
-  in the imported live-test findings.
+Known gaps and limits:
+
 - `list_graph` returns K2 nodes and omits comment boxes; layout does not refit comments.
-- Dedicated asset creation and reroute knot/bus lane tools are not implemented. Reroute support is the
-  next planned addition.
+- Dedicated asset creation and bus-lane tools are not implemented. Asset creation used `run_python`;
+  reroutes work through `add_node(kind="action", name="|AddRerouteNode...")`.
 - Node dimensions are estimates because this DevKit returns placeholder sizes; layout needs further
   calibration against manual placements.
 
@@ -248,6 +257,16 @@ Stand-alone (no editor, any Python 3.11+): type specs, config/ini parsing, the r
 format, the MCP server, and the editor module run against a fake `unreal`. `--shipped` also checks that
 `config.json` and `config.commented.json` hold the same values.
 
+For explicit live diagnostics with the editor open:
+
+```
+py -3.11 -u tests\live_stdio_client.py C:\Dev\Tools\ArkDevkitMcp\live-transcript.json
+```
+
+Feed one JSON command per line, for example
+`{"tool":"editor_status"}` or `{"method":"tools/list","summary":true}`.
+The client records the actual stdio exchange and performs only the operations supplied.
+
 ## Files
 
 | Path | Purpose |
@@ -264,6 +283,7 @@ format, the MCP server, and the editor module run against a fake `unreal`. `--sh
 | `configs/` | `config.json`, `config.commented.json` |
 | `install.ps1` | Registers the server with the Claude desktop app |
 | `tests/logic_tests.py` | Stand-alone tests |
+| `tests/live_stdio_client.py` | Optional interactive client for recording live stdio/editor checks |
 
 ## License
 
