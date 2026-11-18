@@ -11,6 +11,7 @@ ___  ___ _____ ______           .--------.
 | |\/| || |    |  __/               |  MCP
 | |  | || \__/\| |              .---+----.
 \_|  |_/ \____/\_|              | DevKit |
+                                '---+----'
 ```
 
 MCP server that connects Codex or Claude Desktop to the ARK: Survival Ascended DevKit (Unreal Engine 5.8),
