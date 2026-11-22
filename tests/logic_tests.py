@@ -366,7 +366,7 @@ def test_layout():
                      ay + nodes[a_]["h"] <= by or by + nodes[b_]["h"] <= ay)
             check(apart, f"{a_} and {b_} do not overlap")
     check(pos["E1"][1] > pos["Print"][1] + nodes["Print"]["h"], "unconnected event gets its own band below")
-    check(all(v[0] % 16 == 0 and v[1] % 16 == 0 for v in pos.values()), "grid snapped")
+    check(all(v[0] % 8 == 0 and v[1] % 8 == 0 for v in pos.values()), "grid snapped")
     # calibrated against the user's hand layout of BP_McpTest (sizes measured from a screenshot)
     from arkmcp.layout import estimate_node_size as est
     check([round(v) for v in est("K2Node_Event", "Event BeginPlay", [], [("then", "Exec", None, True)])] == [154, 56],
@@ -438,6 +438,74 @@ def test_connection_failures():
         check(sock.closed and not link.connected and not link._installed, 'lost connection clears socket and helper state')
 
 
+def test_layout_cases():
+    """Hand layouts from tests/layout_cases.json: the full layout must reproduce them within tolerance."""
+    from arkmcp.layout import estimate_node_size, layout_graph, pin_offset
+    with open(os.path.join(ROOT, "tests", "layout_cases.json"), encoding="utf-8") as f:
+        data = json.load(f)
+    for case in data["cases"]:
+        nodes = {}
+        for k, spec in case["nodes"].items():
+            w, h = estimate_node_size(spec["cls"], spec["title"], [tuple(p) for p in spec["ins"]],
+                                      [tuple(p) for p in spec["outs"]], spec.get("advanced_hidden", False),
+                                      spec.get("dev_only", False))
+            nodes[k] = dict(w=w, h=h, x=0, y=0, exec=spec["exec"])
+        edges = [(a, pin_offset(ai), b, pin_offset(bi), ex) for a, ai, b, bi, ex in case["edges"]]
+        pos = layout_graph(nodes, edges, origin=(0, 0))
+        tx, ty = case["tolerance"]
+        for k, (hx, hy) in case["hand"].items():
+            if k in case.get("known_gaps", {}):
+                print(f"  known gap [{case['name']}] {k}: rules {pos[k]} vs hand {(hx, hy)}")
+                continue
+            check(abs(pos[k][0] - hx) <= tx and abs(pos[k][1] - hy) <= ty,
+                  f"[{case['name']}] {k}: rules {pos[k]} vs hand {(hx, hy)}")
+
+
+def test_ladder_insert_case():
+    """Sean's arrangement of the ADD-path dedup insertion (tests/captures/*_fixture.json): make room on the rail,
+    build the check beside its source, carry the result on a knot lane."""
+    from arkmcp.layout import place_ladder
+    with open(os.path.join(ROOT, "tests", "captures", "cloudbshelf_training_add_dedup_fixture.json"), encoding="utf-8") as f:
+        fx = json.load(f)
+    r = place_ladder(fx["nodes"], [tuple(e) for e in fx["edges"]], fx["movable"])
+    hand = fx["hand"]
+    check(not r["fallback"], "ladder: no node fell back to plain placement")
+    for k in fx["movable"]:
+        x, y = r["positions"][k]
+        check(abs(x - hand[k][0]) <= 64 and abs(y - hand[k][1]) <= 32, f"ladder: new node {k} {(x, y)} vs hand {hand[k]}")
+    for k in ("K2Node_CallFunction_23", "K2Node_VariableSet_1", "K2Node_VariableSet_3", "K2Node_CallFunction_19",
+              "K2Node_Self_2", "K2Node_VariableGet_7", "K2Node_VariableGet_6"):
+        check(k in r["shifted"], f"ladder: {k} moves with the block")
+        if k in r["positions"]:
+            check(abs(r["positions"][k][0] - hand[k][0]) <= 96, f"ladder: shifted {k} {r['positions'][k]} vs hand {hand[k]}")
+    for k in ("K2Node_CallFunction_23", "K2Node_VariableSet_1", "K2Node_VariableSet_3", "K2Node_CallFunction_19"):
+        check(abs(r["positions"][k][1] - hand[k][1]) <= 16, f"ladder: rail re-levelled {k} y={r['positions'][k][1]} vs hand {hand[k][1]}")
+    check(all(not fx["nodes"][k].get("knot") for k in r["shifted"]), "ladder: lane knots are never shifted")
+    knot = fx["hand_added_knots"]["K2Node_Knot_3"]
+    check(len(r["lanes"]) == 1 and abs(r["lanes"][0]["x"] - knot["pos"][0]) <= 32 and abs(r["lanes"][0]["y"] - knot["pos"][1]) <= 24,
+          f"ladder: result lane knot {r['lanes']} vs hand {knot['pos']}")
+    check(r["lanes"] and [r["lanes"][0][k] for k in ("src", "src_pin", "dst", "dst_pin")] == knot["between"],
+          "ladder: lane splices the same wire Sean routed")
+
+
+def test_toon():
+    from arkmcp import toon
+    out = toon.dumps({"graph": "EventGraph", "count": 2, "ok": True, "none": None,
+                      "nodes": [{"id": "A", "pos": [0, 16], "title": "Get, Item"},
+                                {"id": "B", "pos": [8, 24], "title": "", "extra": "x|y"}],
+                      "names": ["a", "b c"], "nested": {"k": 1},
+                      "mixed": [{"id": "N", "pins": [{"name": "then", "dir": "out"}]}]})
+    lines = out.splitlines()
+    check("graph: EventGraph" in lines and "count: 2" in lines and "ok: true" in lines and "none: " in lines, "toon scalars")
+    check("nodes[2]{id,pos,title,extra}:" in lines, "toon table header with union of keys")
+    check('  A,0|16,"Get, Item",' in lines, "toon row: list cell, quoted comma, empty missing field")
+    check('  B,8|24,"","x|y"' in lines, "toon row: empty string quoted, pipe quoted")
+    check("names[2]: a,b c" in lines and "nested:" in lines and "  k: 1" in lines, "toon scalar list and nested object")
+    check("mixed[1]:" in lines and "  - id: N" in lines and "    pins[1]{name,dir}:" in lines and "      then,out" in lines,
+          "toon list of nested objects")
+    check(toon.dumps([]) == "items[0]:" and toon.dumps("x") == "x", "toon edge cases")
+
+
 def test_shipped():
     plain = config.load_json_with_comments(os.path.join(ROOT, "configs", "config.json"))
     commented = config.load_json_with_comments(os.path.join(ROOT, "configs", "config.commented.json"))
@@ -447,7 +515,7 @@ def test_shipped():
 
 
 if __name__ == "__main__":
-    for t in (test_typespec, test_config, test_protocol, test_mcp, test_editor_module, test_tool_table, test_layout, test_connection_failures):
+    for t in (test_typespec, test_config, test_protocol, test_mcp, test_editor_module, test_tool_table, test_layout, test_connection_failures, test_layout_cases, test_ladder_insert_case, test_toon):
         t()
     if "--shipped" in sys.argv:
         test_shipped()

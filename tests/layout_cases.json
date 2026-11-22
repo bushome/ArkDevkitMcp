@@ -1,0 +1,421 @@
+{
+ "_about": "Hand-arranged Blueprint layouts from Sean, used to calibrate layout.py. Each case: node specs (as estimate_node_size takes them), wires, his positions, and tolerances. known_gaps lists nodes the rules do not reproduce yet, with the measured difference; the test reports them but does not fail on them.",
+ "cases": [
+  {
+   "name": "BP_McpTest EventGraph (2026-11-06)",
+   "source": "/Game/Mods/ArkMcpTest/BP_McpTest",
+   "nodes": {
+    "E0": {
+     "cls": "K2Node_Event",
+     "title": "Event BeginPlay",
+     "exec": true,
+     "ins": [],
+     "outs": [
+      [
+       "then",
+       "Exec",
+       null,
+       true
+      ]
+     ]
+    },
+    "Branch": {
+     "cls": "K2Node_IfThenElse",
+     "title": "Branch",
+     "exec": true,
+     "ins": [
+      [
+       "execute",
+       "Exec",
+       null,
+       true
+      ],
+      [
+       "Condition",
+       "Boolean",
+       "true",
+       true
+      ]
+     ],
+     "outs": [
+      [
+       "then",
+       "Exec",
+       null,
+       true
+      ],
+      [
+       "else",
+       "Exec",
+       null,
+       false
+      ]
+     ]
+    },
+    "Print": {
+     "cls": "K2Node_CallFunction",
+     "title": "PrintString",
+     "exec": true,
+     "advanced_hidden": true,
+     "dev_only": true,
+     "ins": [
+      [
+       "execute",
+       "Exec",
+       null,
+       true
+      ],
+      [
+       "WorldContextObject",
+       "Object Reference",
+       "",
+       false
+      ],
+      [
+       "InString",
+       "String",
+       "ArkDevkitMcp: TestCount is above 5",
+       false
+      ],
+      [
+       "bPrintToScreen",
+       "Boolean",
+       "true",
+       false
+      ],
+      [
+       "bPrintToLog",
+       "Boolean",
+       "true",
+       false
+      ],
+      [
+       "TextColor",
+       "Linear Color Structure",
+       "(R=0)",
+       false
+      ],
+      [
+       "Duration",
+       "Float (single-precision)",
+       "2.000000",
+       false
+      ],
+      [
+       "Key",
+       "Name",
+       "None",
+       false
+      ]
+     ],
+     "outs": [
+      [
+       "then",
+       "Exec",
+       null,
+       false
+      ]
+     ]
+    },
+    "Get": {
+     "cls": "K2Node_VariableGet",
+     "title": "Get TestCount",
+     "exec": false,
+     "ins": [],
+     "outs": [
+      [
+       "TestCount",
+       "Integer",
+       "0",
+       true
+      ]
+     ]
+    },
+    "Gt": {
+     "cls": "K2Node_PromotableOperator",
+     "title": "integer > integer",
+     "exec": false,
+     "ins": [
+      [
+       "A",
+       "Integer",
+       "",
+       true
+      ],
+      [
+       "B",
+       "Integer",
+       "5",
+       false
+      ]
+     ],
+     "outs": [
+      [
+       "ReturnValue",
+       "Boolean",
+       "",
+       true
+      ]
+     ]
+    }
+   },
+   "edges": [
+    [
+     "E0",
+     0,
+     "Branch",
+     0,
+     true
+    ],
+    [
+     "Branch",
+     0,
+     "Print",
+     0,
+     true
+    ],
+    [
+     "Get",
+     0,
+     "Gt",
+     0,
+     false
+    ],
+    [
+     "Gt",
+     0,
+     "Branch",
+     1,
+     false
+    ]
+   ],
+   "hand": {
+    "E0": [
+     0,
+     0
+    ],
+    "Get": [
+     24,
+     72
+    ],
+    "Gt": [
+     192,
+     72
+    ],
+    "Branch": [
+     400,
+     0
+    ],
+    "Print": [
+     600,
+     0
+    ]
+   },
+   "tolerance": [
+    40,
+    24
+   ],
+   "known_gaps": {}
+  },
+  {
+   "name": "CloudBshelf_Training / Make Blueprint Key (2026-11-22)",
+   "source": "/ArkMCPTesting/CloudBshelf_Training",
+   "nodes": {
+    "Entry": {
+     "cls": "K2Node_FunctionEntry",
+     "title": "Make Blueprint Key",
+     "exec": true,
+     "ins": [],
+     "outs": [
+      [
+       "then",
+       "Exec",
+       null,
+       true
+      ],
+      [
+       "ItemID1",
+       "Integer",
+       "0",
+       true
+      ],
+      [
+       "ItemID2",
+       "Integer",
+       "0",
+       true
+      ]
+     ]
+    },
+    "C1": {
+     "cls": "K2Node_CallFunction",
+     "title": "To String (Integer)",
+     "exec": false,
+     "ins": [
+      [
+       "InInt",
+       "Integer",
+       "0",
+       true
+      ]
+     ],
+     "outs": [
+      [
+       "ReturnValue",
+       "String",
+       "",
+       true
+      ]
+     ]
+    },
+    "C2": {
+     "cls": "K2Node_CallFunction",
+     "title": "To String (Integer)",
+     "exec": false,
+     "ins": [
+      [
+       "InInt",
+       "Integer",
+       "0",
+       true
+      ]
+     ],
+     "outs": [
+      [
+       "ReturnValue",
+       "String",
+       "",
+       true
+      ]
+     ]
+    },
+    "App": {
+     "cls": "K2Node_CommutativeAssociativeBinaryOperator",
+     "title": "Append",
+     "exec": false,
+     "ins": [
+      [
+       "A",
+       "String",
+       "",
+       true
+      ],
+      [
+       "B",
+       "String",
+       "_",
+       false
+      ],
+      [
+       "C",
+       "String",
+       "",
+       true
+      ]
+     ],
+     "outs": [
+      [
+       "ReturnValue",
+       "String",
+       "",
+       true
+      ]
+     ]
+    },
+    "Ret": {
+     "cls": "K2Node_FunctionResult",
+     "title": "Return Node",
+     "exec": true,
+     "ins": [
+      [
+       "execute",
+       "Exec",
+       null,
+       true
+      ],
+      [
+       "Key",
+       "String",
+       "",
+       true
+      ]
+     ],
+     "outs": []
+    }
+   },
+   "edges": [
+    [
+     "Entry",
+     0,
+     "Ret",
+     0,
+     true
+    ],
+    [
+     "Entry",
+     1,
+     "C1",
+     0,
+     false
+    ],
+    [
+     "Entry",
+     2,
+     "C2",
+     0,
+     false
+    ],
+    [
+     "C1",
+     0,
+     "App",
+     0,
+     false
+    ],
+    [
+     "C2",
+     0,
+     "App",
+     2,
+     false
+    ],
+    [
+     "App",
+     0,
+     "Ret",
+     1,
+     false
+    ]
+   ],
+   "hand": {
+    "Entry": [
+     0,
+     0
+    ],
+    "C1": [
+     216,
+     56
+    ],
+    "C2": [
+     216,
+     104
+    ],
+    "App": [
+     408,
+     56
+    ],
+    "Ret": [
+     664,
+     0
+    ]
+   },
+   "tolerance": [
+    16,
+    8
+   ],
+   "known_gaps": {
+    "Ret": "rules give x=600; Sean leaves ~114 before a function Return Node vs ~48 on the exec rail (one example so far)"
+   }
+  }
+ ]
+}

@@ -5,7 +5,7 @@ Readability rules (from hand-arranged graphs):
   * a pure data node sits in the column directly before the node that uses it, lined up with the input pin it
     feeds, so its wire is short and nearly flat
   * an exec chain stays on one straight row
-  * nothing overlaps (real node sizes), positions snap to the editor grid
+  * nothing overlaps (estimated node sizes), positions snap to an 8-unit grid (what hand layouts use)
   * separate chains (each event and what hangs off it) get their own band, stacked top to bottom
 
 layout_graph(nodes, edges) -> {node_id: (x, y)}
@@ -60,6 +60,10 @@ def estimate_node_size(cls, title, ins, outs, advanced_hidden=False, dev_only=Fa
     rows = max(len(ins), len(outs), 1)
     if cls in COMPACT_OPERATORS:
         return 142.0, 20.0 + PIN_STEP * rows
+    # auto-inserted conversions ("To String (Integer)" etc.) draw as compact one-in/one-out nodes
+    if (cls == "K2Node_CallFunction" and title.startswith("To ") and len(ins) == 1 and len(outs) == 1
+            and ins[0][1].lower() != "exec" and outs[0][1].lower() != "exec"):
+        return 140.0, 32.0
     if cls == "K2Node_VariableGet" and not ins:
         name = title[4:] if title.startswith("Get ") else title
         return len(display_label(name)) * CHAR_W + 60.0, 32.0
@@ -153,7 +157,7 @@ def _topo(comp, edges):
     return order
 
 
-def layout_graph(nodes, edges, gap_x=48, gap_y=16, band_gap=96, grid=16, origin=None):
+def layout_graph(nodes, edges, gap_x=48, gap_y=16, band_gap=96, grid=8, origin=None):
     ids = list(nodes)
     if not ids:
         return {}
@@ -216,7 +220,7 @@ def layout_graph(nodes, edges, gap_x=48, gap_y=16, band_gap=96, grid=16, origin=
         for n in comp:
             if nodes[n]["exec"] and n in y:
                 exec_cols[col[n]] = max(exec_cols.get(col[n], band_y), y[n] + nodes[n]["h"])
-        lane = band_y + PIN_TOP + PIN_STEP if exec_cols else None
+        lane = band_y + PIN_TOP if exec_cols else None   # just under the exec pin row (calibrated by hand layouts)
 
         def floor_for(c):
             if lane is None:
@@ -249,7 +253,9 @@ def layout_graph(nodes, edges, gap_x=48, gap_y=16, band_gap=96, grid=16, origin=
 
 
 def _snap(v, grid):
-    return int(round(v / grid) * grid) if grid else int(round(v))
+    # round half up: Python's round() rounds halves to even, which made 104 snap to 96 but 56 snap to 64
+    import math as _math_snap
+    return int(_math_snap.floor(v / grid + 0.5) * grid) if grid else int(_math_snap.floor(v + 0.5))
 
 
 # ---- placing new nodes into an existing, hand-arranged graph ----
@@ -267,7 +273,7 @@ def _overlaps(x, y, w, h, rects, pad):
     return False
 
 
-def place_nodes(nodes, edges, movable, gap_x=96, gap_y=16, grid=16, pad=16, max_steps=60, feeder_gap_x=128):
+def place_nodes(nodes, edges, movable, gap_x=96, gap_y=16, grid=8, pad=16, max_steps=60, feeder_gap_x=128):
     """nodes: {id: {"w","h","x","y","exec"}} for ALL nodes; movable: ids to place. Returns {id: (x, y)}."""
     movable = [m for m in movable if m in nodes]
     mset = set(movable)
@@ -321,7 +327,7 @@ def _anchor(k, nodes, preds, succs, pos, gap_x, gap_y, feeder_gap_x):
     for e in succs[k]:                          # data feeder: left of and below the pin it feeds
         if e[2] in pos:
             cx, cy = pos[e[2]]
-            return cx - n["w"] - feeder_gap_x, max(cy + e[3] - e[1], cy + PIN_TOP + PIN_STEP + gap_y)
+            return cx - n["w"] - feeder_gap_x, max(cy + e[3] - e[1], cy + PIN_TOP + gap_y)
     for e in preds[k]:                          # consumer: right of its producer, level with the wire
         if e[0] in pos:
             px, py = pos[e[0]]
@@ -341,3 +347,169 @@ def _free_spot(spot, n, rects, is_exec, gap_x, gap_y, grid, pad, max_steps):
             if not _overlaps(x, y, n["w"], n["h"], rects, pad):
                 return _snap(x, grid), _snap(y, grid)
     return x0, _snap(max((r[1] + r[3] for r in rects), default=y0) + gap_y, grid)
+
+
+# ---- ladder placement: make room on the rail, compute data near its source, carry results on lanes ----
+#
+# Calibrated from Sean's arrangement of the ADD-path dedup insertion in CloudBshelf (tests/captures/
+# cloudbshelf_training_add_dedup_*.json):
+#  * An exec node inserted between two rail nodes goes on the rail. If it does not fit, the downstream rail
+#    (the successor and everything after it on exec wires) shifts right as one block, together with the
+#    successor block's own feeders, keeping the rail's local spacing: the gap that was between predecessor and
+#    successor is used on both sides of the new node. The block also moves vertically so its exec input lines up
+#    with the new node's output pin (Sean re-levelled it by -24 in both of his passes).
+#  * A data computation whose inputs come from far away (a lane source) is built beside the source, on a row
+#    just below the lowest lane running past it, left to right in dependency order, each input lined up with the
+#    pin it feeds.
+#  * Its result reaches a distant consumer through a reroute knot on its own lane (knot ~560 before the
+#    consumer, level with the result pin), then rises into the consumer's pin.
+
+FEEDER_REACH = 600       # feeders this far left of the successor move with the shifted block
+FAR_SOURCE = 1500        # a data chain whose sources are this far from its consumer is built at the source
+SOURCE_OFFSET = 640      # chain starts this far right of its rightmost source node
+CHAIN_GAP = 24           # gap between nodes of a source-anchored chain
+LANE_MIN = 800           # results travelling further than this get a knot lane
+LANE_KNOT_BEFORE = 560   # knot sits this far left of the consumer
+
+
+def _exec_downstream(start, succs, fixed):
+    seen, stack = set(), [start]
+    while stack:
+        k = stack.pop()
+        if k in seen or k not in fixed:
+            continue
+        seen.add(k)
+        stack.extend(e[2] for e in succs[k] if e[4])
+    return seen
+
+
+def place_ladder(nodes, edges, movable, make_room=True, result_lanes=True, gap_x=96, gap_y=16, grid=8):
+    """Returns {"positions": {id: (x, y)} for movable AND shifted nodes,
+                "shifted": {id: (dx, dy)}, "lanes": [{"x", "y", "src", "src_pin", "dst", "dst_pin"}],
+                "fallback": [ids placed by place_nodes]}."""
+    movable = [m for m in movable if m in nodes]
+    mset = set(movable)
+    fixed = {k for k in nodes if k not in mset}
+    pos = {k: [nodes[k]["x"], nodes[k]["y"]] for k in fixed}
+    preds = {k: [] for k in nodes}
+    succs = {k: [] for k in nodes}
+    for e in edges:
+        if e[0] in nodes and e[2] in nodes and e[0] != e[2]:
+            succs[e[0]].append(e)
+            preds[e[2]].append(e)
+    shifted, lanes, placed = {}, [], {}
+
+    def right(k):
+        return pos[k][0] + nodes[k]["w"]
+
+    # 1) exec nodes inserted on the rail
+    for k in [m for m in movable if nodes[m]["exec"]]:
+        pe = next((e for e in preds[k] if e[4] and e[0] in pos), None)
+        se = next((e for e in succs[k] if e[4] and e[2] in fixed), None)
+        if pe is None:
+            continue
+        p = pe[0]
+        y = pos[p][1] + pe[1] - pe[3]
+        if se is not None and make_room:
+            s = se[2]
+            gap = max(pos[s][0] - right(p), gap_x)
+            x = right(p) + gap
+            need = _snap(x + nodes[k]["w"] + gap - pos[s][0], grid)
+            if need > 0:
+                block = _exec_downstream(s, succs, fixed)
+                grew = True
+                while grew:                     # the block's feeders (and their feeders) travel with it
+                    grew = False
+                    for b in list(block):
+                        for e in preds[b]:
+                            f = e[0]
+                            if (f not in block and f in fixed and not nodes[f]["exec"] and not nodes[f].get("knot")
+                                    and pos[f][0] >= pos[s][0] - FEEDER_REACH
+                                    and all(c[2] in block for c in succs[f])):
+                                block.add(f)
+                                grew = True
+                # re-level: the block's exec input now hangs off the new node's pin (e.g. Branch False sits one
+                # pin row lower than the old predecessor's pin), so move the block vertically to keep the rail flat
+                ky = _snap(y, grid)
+                dy = _snap(ky + se[1] - se[3] - pos[s][1], grid)
+                for b in block:
+                    pos[b][0] += need
+                    pos[b][1] += dy
+                    shifted[b] = (need, dy)
+        else:
+            x = right(p) + gap_x
+        pos[k] = [_snap(x, grid), _snap(y, grid)]
+        placed[k] = tuple(pos[k])
+
+    # 2) data chains: connected groups of movable data nodes
+    data = [m for m in movable if not nodes[m]["exec"]]
+    groups, seen = [], set()
+    for d in data:
+        if d in seen:
+            continue
+        grp, stack = [], [d]
+        while stack:
+            k = stack.pop()
+            if k in seen or k not in data:
+                continue
+            seen.add(k)
+            grp.append(k)
+            stack.extend(e[0] for e in preds[k])
+            stack.extend(e[2] for e in succs[k])
+        groups.append(grp)
+    fallback = []
+    for grp in groups:
+        gset = set(grp)
+        sources = {e[0] for k in grp for e in preds[k] if e[0] not in gset and e[0] in pos}
+        exits = [e for k in grp for e in succs[k] if e[2] not in gset and e[2] in pos]
+        consumer_x = min((pos[e[2]][0] for e in exits), default=None)
+        if not sources or consumer_x is None or consumer_x - max(pos[s][0] for s in sources) < FAR_SOURCE:
+            fallback.extend(grp)
+            continue
+        # order: dependency order; among ready nodes, those fed from outside first
+        order, done = [], set()
+        while len(order) < len(grp):
+            ready = [k for k in grp if k not in done and all(e[0] not in gset or e[0] in done for e in preds[k])]
+            ready.sort(key=lambda k: (not any(e[0] in sources for e in preds[k]), grp.index(k)))
+            order.append(ready[0])
+            done.add(ready[0])
+        x0 = max(pos[s][0] for s in sources) + SOURCE_OFFSET
+        xs, x = {}, x0
+        for k in order:
+            xs[k] = x
+            x += nodes[k]["w"] + CHAIN_GAP
+        x_end = x
+        # row: below the lowest lane (knot output wire) or node running through the chain's span
+        floor = max(pos[s][1] + nodes[s]["h"] for s in sources)
+        for f in fixed:
+            fx, fy = pos[f]
+            if nodes[f].get("knot"):
+                reach = max((pos[e[2]][0] for e in succs[f] if e[2] in pos), default=fx)
+                if fx <= x_end and reach >= x0:
+                    floor = max(floor, fy + nodes[f]["h"])
+            elif fx < x_end and fx + nodes[f]["w"] > x0:
+                floor = max(floor, fy + nodes[f]["h"] + gap_y)
+        ys = {}
+        for k in reversed(order):               # line inputs up with the pin they feed
+            feed = next((e for e in succs[k] if e[2] in ys), None)
+            ys[k] = max(floor, ys[feed[2]] + feed[3] - feed[1]) if feed else floor
+        for k in order:
+            pos[k] = [_snap(xs[k], grid), _snap(ys[k], grid)]
+            placed[k] = tuple(pos[k])
+        # 3) result lanes
+        if result_lanes:
+            for e in exits:
+                if pos[e[2]][0] - (pos[e[0]][0] + nodes[e[0]]["w"]) >= LANE_MIN:
+                    lanes.append({"x": _snap(pos[e[2]][0] - LANE_KNOT_BEFORE, grid),
+                                  "y": _snap(pos[e[0]][1] + e[1] - 8, grid),
+                                  "src": e[0], "src_pin": e[5] if len(e) > 5 else None,
+                                  "dst": e[2], "dst_pin": e[6] if len(e) > 6 else None})
+    if fallback:
+        world = {k: dict(nodes[k], x=pos[k][0], y=pos[k][1]) for k in pos}
+        for k in fallback:
+            world[k] = dict(nodes[k])
+        placed.update(place_nodes(world, edges, fallback, gap_x=gap_x, gap_y=gap_y, grid=grid))
+    positions = dict(placed)
+    for b in shifted:
+        positions[b] = tuple(pos[b])
+    return {"positions": positions, "shifted": shifted, "lanes": lanes, "fallback": fallback}

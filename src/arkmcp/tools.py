@@ -2,7 +2,7 @@
 
 import json
 
-from . import VERSION, protocol
+from . import VERSION, protocol, toon
 from .ue_link import LinkError
 
 S = "string"
@@ -137,6 +137,13 @@ TOOLS = [
                     "Undoable as one step.",
      "inputSchema": _schema({"path": PATH, "graph": GRAPH, "nodes": {"type": "array", "items": NODE},
                              "force": {"type": "boolean", "description": "Allow a full re-layout despite knots"},
+                             "ladder": {"type": "boolean", "description":
+                                        "With nodes: follow the user's ladder conventions. An exec node inserted "
+                                        "between two rail nodes goes ON the rail and the downstream rail block (and "
+                                        "its feeders) shifts right to make room; a data computation fed from far "
+                                        "away is built beside its source below the lowest lane; its result gets a "
+                                        "reroute-knot lane to the distant consumer. Moves existing nodes and adds "
+                                        "knots, so only use it when the user agrees. Try dry_run first."},
                              "dry_run": {"type": "boolean", "description": "Return positions without moving"},
                              "gap_x": {"type": "number"}, "gap_y": {"type": "number"}}, ["path"])},
     {"name": "add_node_pin",
@@ -158,7 +165,10 @@ INSTRUCTIONS = (
     "Use refit_comment only on an explicitly named comment and node selection. Use route_bus for shared data "
     "lanes with explicit tap coordinates; existing connected inputs are refused. If a graph tool reports that no signature matched, use api_help on the named function and then "
     "run_python. ARK mods cannot contain C++; everything here is Blueprint/data editing."
-)
+
+    " Replies use a compact TOON-style text format (key: value lines; key[N]{fields}: tables with one row per item; "
+    "list cells joined with |) to save tokens. Prefer list_graph with filter=... or include_pins=false on large graphs; "
+    "fetch pins only for the nodes you are about to wire.")
 
 TOOLS.append({"name": "refit_comment",
               "description": "Resize one named comment around explicitly selected nodes after layout. Only the comment moves; graph nodes and wires are preserved.",
@@ -195,7 +205,7 @@ def make_handler(link, settings, log):
     def dispatch(name, args):
         try:
             if name == "editor_status":
-                return _clip(json.dumps(_status(link, settings), indent=1, default=str), limit), False
+                return _clip(toon.dumps(_status(link, settings)), limit), False
             if name == "run_python":
                 data = link.run(args["code"], protocol.MODE_EXEC_FILE)
                 lines = [o.get("output", "") if o.get("type") == "Info" else f"[{o.get('type')}] {o.get('output', '')}"
@@ -207,9 +217,10 @@ def make_handler(link, settings, log):
             if name in EDITOR_TOOLS:
                 reply = link.call_editor(name, args)
                 if reply.get("ok"):
-                    return _clip(json.dumps(reply.get("result"), indent=1, default=str), limit), False
-                return _clip(json.dumps({k: v for k, v in reply.items() if k != "ok"}, indent=1, default=str),
-                             limit), True
+                    return _clip(toon.dumps(reply.get("result")), limit), False
+                # error details stay compact JSON (tracebacks/docstrings are free text anyway)
+                return _clip(json.dumps({k: v for k, v in reply.items() if k != "ok"}, separators=(",", ":"),
+                                        default=str, ensure_ascii=False), limit), True
             return f"Unknown tool {name}", True
         except LinkError as e:
             return str(e), True

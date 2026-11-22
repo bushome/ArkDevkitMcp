@@ -84,5 +84,5 @@ class McpServer:
                 replies = [r for r in (self.handle(m) for m in batch) if r is not None]
                 resp = (replies if isinstance(msg, list) else replies[0]) if replies else None
             if resp is not None:
-                stdout.write(json.dumps(resp, ensure_ascii=False).encode("utf-8") + b"\n")
+                stdout.write(json.dumps(resp, ensure_ascii=False, separators=(",", ":")).encode("utf-8") + b"\n")
                 stdout.flush()

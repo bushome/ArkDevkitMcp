@@ -899,8 +899,19 @@ def t_create_blueprint(a):
     return {"created": bp.get_path_name(), "saved": False}
 
 
+def _reroute_action(ge):
+    """The palette name of 'Add Reroute Node' differs by graph ('|AddRerouteNode...' or '||AddRerouteNode...')."""
+    names = [str(x) for x in _as_list(_try("list_available_nodes", [(ge, ([],)), (ge, ())]))]
+    for n in names:
+        if n.rstrip(".").endswith("AddRerouteNode"):
+            return n
+    raise ToolError("this graph's palette has no 'Add Reroute Node' action")
+
+
 def t_add_reroute(a):
-    return t_add_node({**a, "kind": "action", "name": "|AddRerouteNode..."})
+    bp = _blueprint(a["path"])
+    ge = _graph_editor(bp, a.get("graph"))
+    return t_add_node({**a, "kind": "action", "name": _reroute_action(ge)})
 
 
 def t_route_bus(a):
@@ -941,7 +952,7 @@ def t_route_bus(a):
         try:
             previous = source
             for tap, destination in destinations:
-                knot = _make_node(ge, bp, {"kind": "action", "name": "|AddRerouteNode...",
+                knot = _make_node(ge, bp, {"kind": "action", "name": _reroute_action(ge),
                                            "x": int(tap["x"]), "y": int(a["y"])})
                 if not isinstance(knot, unreal.Object):
                     raise ToolError("Unreal did not create the reroute")
@@ -975,9 +986,9 @@ def t_add_pin(a):
 
 
 
-def t_tidy_graph(a):
-    bp = _blueprint(a["path"])
-    ge = _graph_editor(bp, a.get("graph"))
+def _gather_geometry(ge):
+    """Every K2 node's estimated size/position and every wire, for layout.py.
+    Edges: (src, src_pin_offset, dst, dst_pin_offset, is_exec, src_pin_name, dst_pin_name)."""
     all_nodes = [n for n in _nodes(ge) if _is_k2(n)]
     by_name = {n.get_name(): n for n in all_nodes}
     geo, pin_index, raw_links = {}, {}, []
@@ -1007,17 +1018,27 @@ def t_tidy_graph(a):
                     if owner is not None:
                         raw_links.append((name, pname, owner.get_name(), _pin_name(other), ptype.lower() == "exec"))
         pos = _get_pos(ge, n)
+        cls = n.get_class().get_name()
         title = str(_safe(lambda: _node_fn(ge, "get_node_title", n), name))
         adv = str(_safe(lambda: n.wc_get_property_value("AdvancedPinDisplay"), "")).upper()
         state = str(_safe(lambda: n.wc_get_property_value("EnabledState"), "")).upper()
-        w, h = estimate_node_size(n.get_class().get_name(), title, size_pins["in"], size_pins["out"],   # layout.py
+        w, h = estimate_node_size(cls, title, size_pins["in"], size_pins["out"],   # layout.py
                                   advanced_hidden="HIDDEN" in adv, dev_only="DEVELOPMENT_ONLY" in state)
-        geo[name] = {"w": w, "h": h, "x": pos[0], "y": pos[1], "exec": has_exec}
+        geo[name] = {"w": w, "h": h, "x": pos[0], "y": pos[1], "exec": has_exec, "knot": cls == "K2Node_Knot"}
     edges = []
     for src, sp, dst, dp, is_exec in raw_links:
         if dst in geo:
             edges.append((src, pin_offset(pin_index.get((src, "out", sp), 0)),
-                          dst, pin_offset(pin_index.get((dst, "in", dp), 0)), is_exec))
+                          dst, pin_offset(pin_index.get((dst, "in", dp), 0)), is_exec, sp, dp))
+    return geo, edges, by_name
+
+
+def t_tidy_graph(a):
+    bp = _blueprint(a["path"])
+    ge = _graph_editor(bp, a.get("graph"))
+    geo, edges, by_name = _gather_geometry(ge)
+    if a.get("export_geometry"):
+        return {"nodes": geo, "edges": [list(e) for e in edges]}
 
     wanted = a.get("nodes")
     gx, gy = a.get("gap_x", 48), a.get("gap_y", 16)
@@ -1025,9 +1046,17 @@ def t_tidy_graph(a):
         missing = [w for w in wanted if w not in geo]
         if missing:
             raise ToolError(f"nodes not in graph: {missing}")
-        # place only these; every other node stays put and is an obstacle  (layout.py)
-        positions = place_nodes(geo, edges, wanted, gap_x=a.get("gap_x", 96), gap_y=gy)
-        mode = "place"
+        lanes = []
+        if a.get("ladder"):
+            # ladder conventions (layout.py place_ladder): may shift the downstream rail block right and adds
+            # knot lanes for results that travel far. Opt-in only.
+            plan = place_ladder(geo, edges, wanted, make_room=True, result_lanes=True, gap_x=a.get("gap_x", 96), gap_y=gy)
+            positions, lanes = plan["positions"], plan["lanes"]
+            mode = "ladder"
+        else:
+            # place only these; every other node stays put and is an obstacle  (layout.py)
+            positions = place_nodes(geo, edges, wanted, gap_x=a.get("gap_x", 96), gap_y=gy)
+            mode = "place"
     else:
         knots = [k for k, n in by_name.items() if n.get_class().get_name() == "K2Node_Knot"]
         if knots and not a.get("force"):
@@ -1037,17 +1066,38 @@ def t_tidy_graph(a):
                 "to re-lay everything.")
         positions = layout_graph(geo, edges, gap_x=gx, gap_y=gy)   # from layout.py
         mode = "full"
-    moved = {}
+        lanes = []
+    moved, knots = {}, []
     if not a.get("dry_run"):
+        if lanes:
+            _reroute_action(ge)   # fail before changing anything if knots cannot be made here
         with unreal.ScopedEditorTransaction("ArkDevkitMcp: tidy graph"):
             for name, (x, y) in positions.items():
                 if [x, y] != [geo[name]["x"], geo[name]["y"]]:
                     _set_pos(ge, by_name[name], x, y)
                     moved[name] = [x, y]
+            for lane in lanes:   # splice a reroute knot into the result wire
+                src = _find_pin(ge, by_name[lane["src"]], lane["src_pin"], "out")
+                dst = _find_pin(ge, by_name[lane["dst"]], lane["dst_pin"], "in")
+                knot = _make_node(ge, bp, {"kind": "action", "name": _reroute_action(ge), "x": lane["x"], "y": lane["y"]})
+                if isinstance(knot, tuple):
+                    knot = next((n for n in knot if isinstance(n, unreal.Object)), None)
+                if not isinstance(knot, unreal.Object):
+                    raise ToolError("could not create a reroute knot for the result lane")
+                _set_pos(ge, knot, lane["x"], lane["y"])
+                _pin_fn("break_single_pin_link", src, dst)
+                k_in = _find_pin(ge, knot, "InputPin", "in")
+                k_out = _find_pin(ge, knot, "OutputPin", "out")
+                if not (_pin_fn("try_create_connection", src, k_in) and _pin_fn("try_create_connection", k_out, dst)):
+                    raise ToolError(f"could not route {lane['src']}.{lane['src_pin']} through the lane knot")
+                knots.append({"id": knot.get_name(), "pos": [lane["x"], lane["y"]],
+                              "carries": f"{lane['src']}.{lane['src_pin']} -> {lane['dst']}.{lane['dst_pin']}"})
     else:
         moved = {k: list(v) for k, v in positions.items()}
-    return {"mode": mode, "moved": moved, "dry_run": bool(a.get("dry_run")),
-            "sizes_used": {k: [round(v["w"]), round(v["h"])] for k, v in geo.items()},
+        knots = [{"pos": [l["x"], l["y"]], "carries": f"{l['src']}.{l['src_pin']} -> {l['dst']}.{l['dst_pin']}"}
+                 for l in lanes]
+    return {"mode": mode, "moved": moved, "lane_knots": knots, "dry_run": bool(a.get("dry_run")),
+            "sizes_used": {k: [round(geo[k]["w"]), round(geo[k]["h"])] for k in moved if k in geo},
             "note": "comment boxes are not moved; Ctrl+Z undoes the whole tidy"}
 
 
@@ -1087,7 +1137,7 @@ def call(tool, args_json):
         if fn is None:
             raise ToolError(f"unknown editor tool {tool!r}")
         args = _json.loads(args_json) if args_json else {}
-        return _json.dumps({"ok": True, "result": fn(args)}, default=str)
+        return _json.dumps({"ok": True, "result": fn(args)}, default=str, separators=(",", ":"))
     except ApiMismatch as e:
         return _json.dumps({"ok": False, "error": f"{e.name}: no signature matched in this DevKit build",
                             "attempts": e.errors[:6], "docs": e.docs,
