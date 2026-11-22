@@ -6,6 +6,11 @@
   Adds (or updates) an "ark-devkit" entry under mcpServers in claude_desktop_config.json. The existing
   file is backed up first and every other entry is kept. Restart the Claude desktop app afterwards.
 
+  The Claude desktop app keeps its config in different places depending on the build; this script looks in
+  %LOCALAPPDATA%\Claude-Data\claude_<id>\ (newer builds) first, then %APPDATA%\Claude\ and the Microsoft
+  Store location. -ConfigPath names the file directly. The app rewrites the file when it quits, so this
+  script refuses to run while Claude is open (quit it from the tray icon first, or pass -Force).
+
   The server only needs Python's standard library. By default it runs on a standalone Python
   (-Python, else Python 3.11 found via the py launcher or the usual install folders), not the DevKit's
   bundled Python: the Epic launcher treats the DevKit as "running" while any process from the DevKit
@@ -15,13 +20,16 @@
   powershell -ExecutionPolicy Bypass -File .\install.ps1
   powershell -ExecutionPolicy Bypass -File .\install.ps1 -DevkitRoot D:\ARKDevkit -Check
   powershell -ExecutionPolicy Bypass -File .\install.ps1 -Python C:\Python311\python.exe
+  powershell -ExecutionPolicy Bypass -File .\install.ps1 -ConfigPath "$env:LOCALAPPDATA\Claude-Data\claude_xxxx\claude_desktop_config.json"
 #>
 param(
     [string]$DevkitRoot = "E:\ARKDevkit",
     [string]$ServerName = "ark-devkit",
     [string]$Python = "",  # python.exe to run the server with; empty = find a standalone install
+    [string]$ConfigPath = "",  # explicit claude_desktop_config.json; skips the search below
     [switch]$Check,      # also run the server's --check against the open editor
-    [switch]$Uninstall
+    [switch]$Uninstall,
+    [switch]$Force       # edit the config even though the Claude desktop app is running
 )
 
 $ErrorActionPreference = "Stop"
@@ -74,16 +82,39 @@ if (-not $Uninstall) {
     Write-Host "Using Python: $python"
 }
 
-# Standard install, plus the Microsoft Store package location if that build is installed.
-$targets = @(Join-Path $env:APPDATA "Claude\claude_desktop_config.json")
-Get-ChildItem (Join-Path $env:LOCALAPPDATA "Packages") -Directory -Filter "Claude_*" -ErrorAction SilentlyContinue |
-    ForEach-Object { $targets += (Join-Path $_.FullName "LocalCache\Roaming\Claude\claude_desktop_config.json") }
+# The app saves its in-memory settings back to the config when it quits, which would silently drop this edit.
+$running = Get-Process -Name "Claude" -ErrorAction SilentlyContinue
+if ($running -and -not $Force) {
+    throw ("The Claude desktop app is running. Quit it completely (tray icon > Quit, and check Task Manager), " +
+        "then run this again; it rewrites its config on exit and would undo this change. -Force skips this check.")
+}
+
+# Where the config lives depends on the app build:
+#   %LOCALAPPDATA%\Claude-Data\claude_<id>\                        newer builds (the one in use has the file)
+#   %APPDATA%\Claude\                                               classic installer
+#   %LOCALAPPDATA%\Packages\Claude_*\LocalCache\Roaming\Claude\     Microsoft Store
+$targets = @()
+if ($ConfigPath) {
+    $targets = @($ConfigPath)
+} else {
+    Get-ChildItem (Join-Path $env:LOCALAPPDATA "Claude-Data") -Directory -ErrorAction SilentlyContinue |
+        Where-Object { Test-Path (Join-Path $_.FullName "claude_desktop_config.json") } |
+        ForEach-Object { $targets += (Join-Path $_.FullName "claude_desktop_config.json") }
+    if ($targets.Count -eq 0) {
+        $targets += (Join-Path $env:APPDATA "Claude\claude_desktop_config.json")
+        Get-ChildItem (Join-Path $env:LOCALAPPDATA "Packages") -Directory -Filter "Claude_*" -ErrorAction SilentlyContinue |
+            ForEach-Object { $targets += (Join-Path $_.FullName "LocalCache\Roaming\Claude\claude_desktop_config.json") }
+    }
+}
 
 $utf8 = New-Object System.Text.UTF8Encoding $false
 $wrote = 0
 foreach ($cfg in $targets) {
     $dir = Split-Path -Parent $cfg
-    if (-not (Test-Path $dir)) { continue }
+    if (-not (Test-Path $dir)) {
+        if ($ConfigPath) { throw "Folder for -ConfigPath does not exist: $dir" }
+        continue
+    }
 
     if (Test-Path $cfg) {
         $raw = [IO.File]::ReadAllText($cfg)
@@ -118,4 +149,4 @@ if ($Check -and -not $Uninstall) {
     & $python -u $server --check
 }
 
-Write-Host "`nRestart the Claude desktop app (quit it from the tray icon) to load the change."
+Write-Host "`nStart the Claude desktop app to load the change (Settings > Developer lists '$ServerName')."

@@ -94,7 +94,8 @@ as `true`. `install.ps1` configures Claude Desktop only; it does not edit Codex'
 Fully close Claude Desktop before editing its config: the app can rewrite the file on exit and discard
 outside changes. On this workstation, the active file is under
 `%LOCALAPPDATA%\Claude-Data\claude_<id>\claude_desktop_config.json`, rather than `%APPDATA%\Claude`.
-Merge this server entry into the active file's existing `mcpServers` object, then restart Claude Desktop:
+`install.ps1` (below) finds that file and merges the entry for you. To do it by hand, merge this server
+entry into the active file's existing `mcpServers` object, then start Claude Desktop:
 
 ```json
 {
@@ -107,18 +108,20 @@ Merge this server entry into the active file's existing `mcpServers` object, the
 }
 ```
 
-The checked-in installer still targets `%APPDATA%\Claude` and the Microsoft Store package's
-`LocalCache\Roaming\Claude` folder. It does **not** discover `Claude-Data` and has no `-ConfigPath` option,
-so use the manual entry above for that layout. For installations using the older locations:
+With Claude Desktop fully closed:
 
 ```powershell
 cd C:\Dev\Tools\ArkDevkitMcp
 powershell -ExecutionPolicy Bypass -File .\install.ps1 -Check
 ```
 
-The script backs up the config and preserves other server entries. `-Check` also connects to the open
-editor and prints its status. Options: `-Python <path>`, `-DevkitRoot <path>`, `-ServerName <name>`,
-`-Check`, `-Uninstall`.
+The installer looks for the config in `%LOCALAPPDATA%\Claude-Data\claude_<id>\` first (every such folder
+that already has a `claude_desktop_config.json`), and only if none exists falls back to `%APPDATA%\Claude`
+and the Microsoft Store package's `LocalCache\Roaming\Claude` folder. `-ConfigPath <file>` names the file
+directly. It refuses to run while the Claude app is open, because the app rewrites its config on exit and
+would undo the change; `-Force` skips that check. The script backs up the config and preserves other server
+entries. `-Check` also connects to the open editor and prints its status. Options: `-Python <path>`,
+`-DevkitRoot <path>`, `-ConfigPath <file>`, `-ServerName <name>`, `-Check`, `-Uninstall`, `-Force`.
 
 ### Check without an MCP client
 
@@ -247,7 +250,8 @@ Known gaps and limits:
 - **Mod assets are missing**: pass the mod root to `find_assets`, such as `/ArkMCPTesting`, instead of
   relying on the default `/Game` path.
 - **Claude config changes have no effect**: confirm the active config location and fully close the app
-  before editing it. The checked-in installer does not target the `Claude-Data` layout.
+  before editing it. `install.ps1` refuses to run while the app is open; check which file it reports as
+  `Registered ... in <path>` against the one Settings > Developer > Edit Config opens.
 - Server diagnostics go to stderr, captured by the MCP client. For older Claude Desktop layouts, the
   server log is `%APPDATA%\Claude\logs\mcp-server-ark-devkit.log`; locations vary by client/install.
 - Use the standalone `--check` command above to separate editor connectivity from MCP client setup.
