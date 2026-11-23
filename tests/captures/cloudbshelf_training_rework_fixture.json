@@ -1,0 +1,2699 @@
+{
+ "about": "Sean's reworked CloudBshelf_Training EventGraph (2026-11-22 evening). Re-placement cases: the listed nodes are treated as new; the rules should put them back where Sean did.",
+ "nodes": {
+  "K2Node_Event_3": {
+   "w": 270.5,
+   "h": 128.0,
+   "x": 112,
+   "y": 808,
+   "exec": true,
+   "knot": false
+  },
+  "K2Node_CallParentFunction_0": {
+   "w": 283.5,
+   "h": 128.0,
+   "x": 496,
+   "y": 624,
+   "exec": true,
+   "knot": false
+  },
+  "K2Node_VariableGet_2": {
+   "w": 205.0,
+   "h": 56.0,
+   "x": 7554,
+   "y": 2194,
+   "exec": false,
+   "knot": false
+  },
+  "K2Node_CallFunction_0": {
+   "w": 140.0,
+   "h": 80.0,
+   "x": 7128,
+   "y": 1880,
+   "exec": false,
+   "knot": false
+  },
+  "K2Node_CallFunction_48": {
+   "w": 244.5,
+   "h": 128.0,
+   "x": 5294,
+   "y": 1335,
+   "exec": true,
+   "knot": false
+  },
+  "K2Node_CommutativeAssociativeBinaryOperator_30": {
+   "w": 142.0,
+   "h": 68.0,
+   "x": 6899,
+   "y": 1419,
+   "exec": false,
+   "knot": false
+  },
+  "K2Node_BreakStruct_2": {
+   "w": 518.5,
+   "h": 104.0,
+   "x": 6016,
+   "y": 1456,
+   "exec": false,
+   "knot": false
+  },
+  "K2Node_CallFunction_62": {
+   "w": 199.0,
+   "h": 80.0,
+   "x": 6113,
+   "y": 1350,
+   "exec": true,
+   "knot": false
+  },
+  "K2Node_CallFunction_63": {
+   "w": 140.0,
+   "h": 32.0,
+   "x": 6968,
+   "y": 1540,
+   "exec": false,
+   "knot": false
+  },
+  "K2Node_CommutativeAssociativeBinaryOperator_36": {
+   "w": 142.0,
+   "h": 68.0,
+   "x": 6680,
+   "y": 1419,
+   "exec": false,
+   "knot": false
+  },
+  "K2Node_MacroInstance_2": {
+   "w": 219.5,
+   "h": 128.0,
+   "x": 5689,
+   "y": 1350,
+   "exec": true,
+   "knot": false
+  },
+  "K2Node_ExecutionSequence_3": {
+   "w": 127.0,
+   "h": 80.0,
+   "x": 6641,
+   "y": 1726,
+   "exec": true,
+   "knot": false
+  },
+  "K2Node_CallFunction_6": {
+   "w": 160.0,
+   "h": 80.0,
+   "x": 4265,
+   "y": 793,
+   "exec": true,
+   "knot": false
+  },
+  "K2Node_MacroInstance_3": {
+   "w": 219.5,
+   "h": 128.0,
+   "x": 4631,
+   "y": 808,
+   "exec": true,
+   "knot": false
+  },
+  "K2Node_CallFunction_16": {
+   "w": 225.0,
+   "h": 128.0,
+   "x": 5816,
+   "y": 877,
+   "exec": false,
+   "knot": false
+  },
+  "K2Node_CommutativeAssociativeBinaryOperator_0": {
+   "w": 142.0,
+   "h": 68.0,
+   "x": 5597,
+   "y": 877,
+   "exec": false,
+   "knot": false
+  },
+  "K2Node_ExecutionSequence_7": {
+   "w": 127.0,
+   "h": 80.0,
+   "x": 5059,
+   "y": 1318,
+   "exec": true,
+   "knot": false
+  },
+  "K2Node_CommutativeAssociativeBinaryOperator_21": {
+   "w": 142.0,
+   "h": 68.0,
+   "x": 5059,
+   "y": 877,
+   "exec": false,
+   "knot": false
+  },
+  "K2Node_CallFunction_42": {
+   "w": 140.0,
+   "h": 32.0,
+   "x": 5429,
+   "y": 998,
+   "exec": false,
+   "knot": false
+  },
+  "K2Node_CommutativeAssociativeBinaryOperator_28": {
+   "w": 142.0,
+   "h": 68.0,
+   "x": 5296,
+   "y": 877,
+   "exec": false,
+   "knot": false
+  },
+  "K2Node_CallFunction_106": {
+   "w": 140.0,
+   "h": 32.0,
+   "x": 7834,
+   "y": 2194,
+   "exec": false,
+   "knot": false
+  },
+  "K2Node_CallFunction_1": {
+   "w": 127.0,
+   "h": 56.0,
+   "x": 1495,
+   "y": 926,
+   "exec": false,
+   "knot": false
+  },
+  "K2Node_VariableSet_2": {
+   "w": 252.0,
+   "h": 80.0,
+   "x": 6086,
+   "y": 824,
+   "exec": true,
+   "knot": false
+  },
+  "K2Node_CallFunction_7": {
+   "w": 199.0,
+   "h": 80.0,
+   "x": 1495,
+   "y": 808,
+   "exec": true,
+   "knot": false
+  },
+  "K2Node_CallFunction_8": {
+   "w": 166.5,
+   "h": 104.0,
+   "x": 1817,
+   "y": 793,
+   "exec": true,
+   "knot": false
+  },
+  "K2Node_CallFunction_9": {
+   "w": 166.5,
+   "h": 104.0,
+   "x": 2123,
+   "y": 793,
+   "exec": true,
+   "knot": false
+  },
+  "K2Node_CallFunction_10": {
+   "w": 166.5,
+   "h": 104.0,
+   "x": 2429,
+   "y": 793,
+   "exec": true,
+   "knot": false
+  },
+  "K2Node_CallFunction_11": {
+   "w": 166.5,
+   "h": 104.0,
+   "x": 2735,
+   "y": 793,
+   "exec": true,
+   "knot": false
+  },
+  "K2Node_CallFunction_12": {
+   "w": 166.5,
+   "h": 104.0,
+   "x": 3041,
+   "y": 793,
+   "exec": true,
+   "knot": false
+  },
+  "K2Node_CallFunction_13": {
+   "w": 166.5,
+   "h": 104.0,
+   "x": 3347,
+   "y": 793,
+   "exec": true,
+   "knot": false
+  },
+  "K2Node_CallFunction_14": {
+   "w": 166.5,
+   "h": 104.0,
+   "x": 3653,
+   "y": 793,
+   "exec": true,
+   "knot": false
+  },
+  "K2Node_CallFunction_5": {
+   "w": 166.5,
+   "h": 104.0,
+   "x": 3959,
+   "y": 793,
+   "exec": true,
+   "knot": false
+  },
+  "K2Node_CallFunction_23": {
+   "w": 237.5,
+   "h": 488.0,
+   "x": 8824,
+   "y": 2032,
+   "exec": true,
+   "knot": false
+  },
+  "K2Node_VariableGet_5": {
+   "w": 144.5,
+   "h": 32.0,
+   "x": 7832,
+   "y": 2512,
+   "exec": false,
+   "knot": false
+  },
+  "K2Node_VariableGet_6": {
+   "w": 203.0,
+   "h": 32.0,
+   "x": 7800,
+   "y": 2560,
+   "exec": false,
+   "knot": false
+  },
+  "K2Node_VariableGet_0": {
+   "w": 133.5,
+   "h": 104.0,
+   "x": 6876,
+   "y": 1758,
+   "exec": true,
+   "knot": false
+  },
+  "K2Node_CallFunction_26": {
+   "w": 231.5,
+   "h": 200.0,
+   "x": 2608,
+   "y": 296,
+   "exec": true,
+   "knot": false
+  },
+  "K2Node_CallFunction_21": {
+   "w": 252.5,
+   "h": 264.0,
+   "x": 3470,
+   "y": 311,
+   "exec": true,
+   "knot": false
+  },
+  "K2Node_CallFunction_27": {
+   "w": 192.0,
+   "h": 80.0,
+   "x": 777,
+   "y": 808,
+   "exec": true,
+   "knot": false
+  },
+  "K2Node_CallFunction_2": {
+   "w": 140.0,
+   "h": 80.0,
+   "x": 1832,
+   "y": 464,
+   "exec": false,
+   "knot": false
+  },
+  "K2Node_VariableGet_9": {
+   "w": 250.5,
+   "h": 56.0,
+   "x": 2238,
+   "y": 395,
+   "exec": false,
+   "knot": false
+  },
+  "K2Node_VariableGet_7": {
+   "w": 250.5,
+   "h": 56.0,
+   "x": 7688,
+   "y": 2122,
+   "exec": false,
+   "knot": false
+  },
+  "K2Node_IfThenElse_0": {
+   "w": 180.5,
+   "h": 80.0,
+   "x": 1130,
+   "y": 808,
+   "exec": true,
+   "knot": false
+  },
+  "K2Node_CommutativeAssociativeBinaryOperator_32": {
+   "w": 142.0,
+   "h": 68.0,
+   "x": 7136,
+   "y": 1419,
+   "exec": false,
+   "knot": false
+  },
+  "K2Node_CommutativeAssociativeBinaryOperator_34": {
+   "w": 142.0,
+   "h": 68.0,
+   "x": 7355,
+   "y": 1419,
+   "exec": false,
+   "knot": false
+  },
+  "K2Node_VariableSet_0": {
+   "w": 310.5,
+   "h": 80.0,
+   "x": 7592,
+   "y": 1366,
+   "exec": true,
+   "knot": false
+  },
+  "K2Node_VariableGet_16": {
+   "w": 133.5,
+   "h": 104.0,
+   "x": 1833,
+   "y": 311,
+   "exec": true,
+   "knot": false
+  },
+  "K2Node_MacroInstance_4": {
+   "w": 245.5,
+   "h": 104.0,
+   "x": 491,
+   "y": 808,
+   "exec": true,
+   "knot": false
+  },
+  "K2Node_CallFunction_19": {
+   "w": 237.5,
+   "h": 264.0,
+   "x": 9782,
+   "y": 2054,
+   "exec": true,
+   "knot": false
+  },
+  "K2Node_Self_0": {
+   "w": 147.0,
+   "h": 56.0,
+   "x": 2066,
+   "y": 395,
+   "exec": false,
+   "knot": false
+  },
+  "K2Node_Self_1": {
+   "w": 147.0,
+   "h": 56.0,
+   "x": 777,
+   "y": 926,
+   "exec": false,
+   "knot": false
+  },
+  "K2Node_Self_2": {
+   "w": 147.0,
+   "h": 56.0,
+   "x": 7516,
+   "y": 2122,
+   "exec": false,
+   "knot": false
+  },
+  "K2Node_VariableSet_1": {
+   "w": 310.5,
+   "h": 80.0,
+   "x": 9157,
+   "y": 2070,
+   "exec": true,
+   "knot": false
+  },
+  "K2Node_VariableSet_3": {
+   "w": 252.0,
+   "h": 80.0,
+   "x": 9491,
+   "y": 2070,
+   "exec": true,
+   "knot": false
+  },
+  "K2Node_CallFunction_3": {
+   "w": 173.0,
+   "h": 80.0,
+   "x": 7361,
+   "y": 1898,
+   "exec": false,
+   "knot": false
+  },
+  "K2Node_VariableGet_1": {
+   "w": 190.0,
+   "h": 32.0,
+   "x": 7362,
+   "y": 1832,
+   "exec": false,
+   "knot": false
+  },
+  "K2Node_CallFunction_4": {
+   "w": 166.0,
+   "h": 80.0,
+   "x": 7578,
+   "y": 1827,
+   "exec": false,
+   "knot": false
+  },
+  "K2Node_IfThenElse_1": {
+   "w": 180.5,
+   "h": 80.0,
+   "x": 7852,
+   "y": 1758,
+   "exec": true,
+   "knot": false
+  },
+  "K2Node_CallFunction_15": {
+   "w": 153.0,
+   "h": 104.0,
+   "x": 3188,
+   "y": 327,
+   "exec": true,
+   "knot": false
+  },
+  "K2Node_VariableGet_3": {
+   "w": 190.0,
+   "h": 32.0,
+   "x": 2972,
+   "y": 380,
+   "exec": false,
+   "knot": false
+  },
+  "K2Node_CallFunction_17": {
+   "w": 173.0,
+   "h": 80.0,
+   "x": 2971,
+   "y": 446,
+   "exec": false,
+   "knot": false
+  },
+  "K2Node_Knot_4": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 4632,
+   "y": 668,
+   "exec": true,
+   "knot": true
+  },
+  "K2Node_Knot_13": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 6223,
+   "y": 668,
+   "exec": true,
+   "knot": true
+  },
+  "K2Node_Knot_18": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 1690,
+   "y": 344,
+   "exec": true,
+   "knot": true
+  },
+  "K2Node_Knot_19": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 5690,
+   "y": 1250,
+   "exec": true,
+   "knot": true
+  },
+  "K2Node_Knot_21": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 7773,
+   "y": 1250,
+   "exec": true,
+   "knot": true
+  },
+  "K2Node_Knot_22": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 4916,
+   "y": 1351,
+   "exec": true,
+   "knot": true
+  },
+  "K2Node_Knot_23": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 6042,
+   "y": 1759,
+   "exec": true,
+   "knot": true
+  },
+  "K2Node_Knot_24": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 6196,
+   "y": 707,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_25": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 5080,
+   "y": 707,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_26": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 504,
+   "y": 980,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_30": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 983,
+   "y": 980,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_31": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 5027,
+   "y": 1007,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_32": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 5027,
+   "y": 1052,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_33": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 5733,
+   "y": 1052,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_34": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 2032,
+   "y": 368,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_35": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 2517,
+   "y": 365,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_36": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 7745,
+   "y": 1290,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_37": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 6701,
+   "y": 1290,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_39": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 2353,
+   "y": 574,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_40": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 2840,
+   "y": 574,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_56": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 2353,
+   "y": 600,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_57": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 2840,
+   "y": 600,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_58": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 6365,
+   "y": 1414,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_59": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 1758,
+   "y": 2164,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_60": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 7943,
+   "y": 2172,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_61": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 5941,
+   "y": 1412,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_63": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 1135,
+   "y": 2606,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_66": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 7943,
+   "y": 2606,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_67": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 520,
+   "y": 1528,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_68": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 1412,
+   "y": 1528,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_69": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 1734,
+   "y": 1528,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_71": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 2040,
+   "y": 1528,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_72": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 2346,
+   "y": 1528,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_73": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 2652,
+   "y": 1528,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_74": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 2958,
+   "y": 1528,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_75": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 3264,
+   "y": 1528,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_76": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 3570,
+   "y": 1528,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_77": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 3876,
+   "y": 1528,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_78": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 4182,
+   "y": 1528,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_79": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 5075,
+   "y": 1528,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_81": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 5471,
+   "y": 2200,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_82": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 6621,
+   "y": 1549,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_83": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 4062,
+   "y": 2296,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_84": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 7943,
+   "y": 2296,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_85": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 3740,
+   "y": 2322,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_86": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 7943,
+   "y": 2322,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_87": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 7386,
+   "y": 2242,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_88": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 7943,
+   "y": 2242,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_89": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 3418,
+   "y": 2348,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_90": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 7943,
+   "y": 2348,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_91": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 7354,
+   "y": 2268,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_92": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 7943,
+   "y": 2268,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_93": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 3048,
+   "y": 2374,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_94": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 7943,
+   "y": 2374,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_95": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 7122,
+   "y": 2094,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_96": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 7935,
+   "y": 2094,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_97": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 2758,
+   "y": 2400,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_98": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 7943,
+   "y": 2400,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_101": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 2476,
+   "y": 2426,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_102": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 7943,
+   "y": 2426,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_103": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 2138,
+   "y": 2452,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_104": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 7943,
+   "y": 2452,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_105": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 1824,
+   "y": 2478,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_106": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 7943,
+   "y": 2478,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_107": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 5224,
+   "y": 1136,
+   "exec": true,
+   "knot": true
+  },
+  "K2Node_Knot_108": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 6232,
+   "y": 1136,
+   "exec": true,
+   "knot": true
+  },
+  "K2Node_Knot_113": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 1168,
+   "y": 696,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_114": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 2336,
+   "y": 696,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_116": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 752,
+   "y": 1528,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_117": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 5864,
+   "y": 1928,
+   "exec": false,
+   "knot": true
+  },
+  "K2Node_Knot_118": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 6848,
+   "y": 1696,
+   "exec": true,
+   "knot": true
+  },
+  "K2Node_Knot_119": {
+   "w": 32.0,
+   "h": 16.0,
+   "x": 7768,
+   "y": 1696,
+   "exec": true,
+   "knot": true
+  }
+ },
+ "edges": [
+  [
+   "K2Node_Event_3",
+   40,
+   "K2Node_MacroInstance_4",
+   40,
+   true,
+   "then",
+   "Execute"
+  ],
+  [
+   "K2Node_Event_3",
+   64,
+   "K2Node_Knot_26",
+   40,
+   false,
+   "bIsItemAdd",
+   "InputPin"
+  ],
+  [
+   "K2Node_Event_3",
+   88,
+   "K2Node_CallParentFunction_0",
+   88,
+   false,
+   "theItem",
+   "theItem"
+  ],
+  [
+   "K2Node_Event_3",
+   88,
+   "K2Node_Knot_67",
+   40,
+   false,
+   "theItem",
+   "InputPin"
+  ],
+  [
+   "K2Node_Event_3",
+   112,
+   "K2Node_CallParentFunction_0",
+   64,
+   false,
+   "bEquipItem",
+   "bIsItemAdd"
+  ],
+  [
+   "K2Node_VariableGet_2",
+   40,
+   "K2Node_CallFunction_106",
+   40,
+   false,
+   "ItemQualityIndex",
+   "InByte"
+  ],
+  [
+   "K2Node_CallFunction_0",
+   40,
+   "K2Node_CallFunction_3",
+   40,
+   false,
+   "ItemID1",
+   "ItemID1"
+  ],
+  [
+   "K2Node_CallFunction_0",
+   40,
+   "K2Node_Knot_87",
+   40,
+   false,
+   "ItemID1",
+   "InputPin"
+  ],
+  [
+   "K2Node_CallFunction_0",
+   64,
+   "K2Node_CallFunction_3",
+   64,
+   false,
+   "ItemID2",
+   "ItemID2"
+  ],
+  [
+   "K2Node_CallFunction_0",
+   64,
+   "K2Node_Knot_91",
+   40,
+   false,
+   "ItemID2",
+   "InputPin"
+  ],
+  [
+   "K2Node_CallFunction_48",
+   40,
+   "K2Node_MacroInstance_2",
+   40,
+   true,
+   "then",
+   "Exec"
+  ],
+  [
+   "K2Node_CallFunction_48",
+   64,
+   "K2Node_MacroInstance_2",
+   64,
+   false,
+   "ReturnValue",
+   "Array"
+  ],
+  [
+   "K2Node_CommutativeAssociativeBinaryOperator_30",
+   40,
+   "K2Node_CommutativeAssociativeBinaryOperator_32",
+   40,
+   false,
+   "ReturnValue",
+   "A"
+  ],
+  [
+   "K2Node_BreakStruct_2",
+   40,
+   "K2Node_Knot_82",
+   40,
+   false,
+   "BaseResourceRequirement",
+   "InputPin"
+  ],
+  [
+   "K2Node_BreakStruct_2",
+   64,
+   "K2Node_CallFunction_62",
+   64,
+   false,
+   "ResourceItemType",
+   "ForClass"
+  ],
+  [
+   "K2Node_CallFunction_62",
+   40,
+   "K2Node_VariableSet_0",
+   40,
+   true,
+   "then",
+   "execute"
+  ],
+  [
+   "K2Node_CallFunction_62",
+   64,
+   "K2Node_Knot_58",
+   40,
+   false,
+   "ReturnValue",
+   "InputPin"
+  ],
+  [
+   "K2Node_CallFunction_63",
+   40,
+   "K2Node_CommutativeAssociativeBinaryOperator_32",
+   64,
+   false,
+   "ReturnValue",
+   "B"
+  ],
+  [
+   "K2Node_CommutativeAssociativeBinaryOperator_36",
+   40,
+   "K2Node_CommutativeAssociativeBinaryOperator_30",
+   40,
+   false,
+   "ReturnValue",
+   "A"
+  ],
+  [
+   "K2Node_MacroInstance_2",
+   40,
+   "K2Node_CallFunction_62",
+   40,
+   true,
+   "LoopBody",
+   "execute"
+  ],
+  [
+   "K2Node_MacroInstance_2",
+   64,
+   "K2Node_Knot_61",
+   40,
+   false,
+   "Array Element",
+   "InputPin"
+  ],
+  [
+   "K2Node_MacroInstance_2",
+   112,
+   "K2Node_Knot_23",
+   40,
+   true,
+   "Completed",
+   "InputPin"
+  ],
+  [
+   "K2Node_ExecutionSequence_3",
+   40,
+   "K2Node_Knot_118",
+   40,
+   true,
+   "then_0",
+   "InputPin"
+  ],
+  [
+   "K2Node_ExecutionSequence_3",
+   64,
+   "K2Node_VariableGet_0",
+   40,
+   true,
+   "then_1",
+   "execute"
+  ],
+  [
+   "K2Node_CallFunction_6",
+   40,
+   "K2Node_MacroInstance_3",
+   40,
+   true,
+   "then",
+   "Exec"
+  ],
+  [
+   "K2Node_CallFunction_6",
+   64,
+   "K2Node_MacroInstance_3",
+   64,
+   false,
+   "ReturnValue",
+   "Array"
+  ],
+  [
+   "K2Node_MacroInstance_3",
+   40,
+   "K2Node_VariableSet_2",
+   40,
+   true,
+   "LoopBody",
+   "execute"
+  ],
+  [
+   "K2Node_MacroInstance_3",
+   64,
+   "K2Node_Knot_32",
+   40,
+   false,
+   "Array Element",
+   "InputPin"
+  ],
+  [
+   "K2Node_MacroInstance_3",
+   88,
+   "K2Node_Knot_31",
+   40,
+   false,
+   "Array Index",
+   "InputPin"
+  ],
+  [
+   "K2Node_MacroInstance_3",
+   112,
+   "K2Node_Knot_22",
+   40,
+   true,
+   "Completed",
+   "InputPin"
+  ],
+  [
+   "K2Node_CallFunction_16",
+   40,
+   "K2Node_VariableSet_2",
+   64,
+   false,
+   "ReturnValue",
+   "Color String"
+  ],
+  [
+   "K2Node_CommutativeAssociativeBinaryOperator_0",
+   40,
+   "K2Node_CallFunction_16",
+   40,
+   false,
+   "ReturnValue",
+   "AppendTo"
+  ],
+  [
+   "K2Node_ExecutionSequence_7",
+   40,
+   "K2Node_Knot_107",
+   40,
+   true,
+   "then_0",
+   "InputPin"
+  ],
+  [
+   "K2Node_ExecutionSequence_7",
+   64,
+   "K2Node_CallFunction_48",
+   40,
+   true,
+   "then_1",
+   "execute"
+  ],
+  [
+   "K2Node_CommutativeAssociativeBinaryOperator_21",
+   40,
+   "K2Node_CommutativeAssociativeBinaryOperator_28",
+   40,
+   false,
+   "ReturnValue",
+   "A"
+  ],
+  [
+   "K2Node_CallFunction_42",
+   40,
+   "K2Node_CommutativeAssociativeBinaryOperator_0",
+   64,
+   false,
+   "ReturnValue",
+   "B"
+  ],
+  [
+   "K2Node_CommutativeAssociativeBinaryOperator_28",
+   40,
+   "K2Node_CommutativeAssociativeBinaryOperator_0",
+   40,
+   false,
+   "ReturnValue",
+   "A"
+  ],
+  [
+   "K2Node_CallFunction_106",
+   40,
+   "K2Node_CallFunction_23",
+   136,
+   false,
+   "ReturnValue",
+   "ItemQualityIndex"
+  ],
+  [
+   "K2Node_CallFunction_1",
+   40,
+   "K2Node_CallFunction_7",
+   64,
+   false,
+   "ReturnValue",
+   "ForClass"
+  ],
+  [
+   "K2Node_VariableSet_2",
+   64,
+   "K2Node_Knot_24",
+   40,
+   false,
+   "Output_Get",
+   "InputPin"
+  ],
+  [
+   "K2Node_CallFunction_7",
+   40,
+   "K2Node_CallFunction_8",
+   40,
+   true,
+   "then",
+   "execute"
+  ],
+  [
+   "K2Node_CallFunction_7",
+   64,
+   "K2Node_Knot_59",
+   40,
+   false,
+   "ReturnValue",
+   "InputPin"
+  ],
+  [
+   "K2Node_CallFunction_8",
+   40,
+   "K2Node_CallFunction_9",
+   40,
+   true,
+   "then",
+   "execute"
+  ],
+  [
+   "K2Node_CallFunction_8",
+   64,
+   "K2Node_Knot_105",
+   40,
+   false,
+   "ReturnValue",
+   "InputPin"
+  ],
+  [
+   "K2Node_CallFunction_9",
+   40,
+   "K2Node_CallFunction_10",
+   40,
+   true,
+   "then",
+   "execute"
+  ],
+  [
+   "K2Node_CallFunction_9",
+   64,
+   "K2Node_Knot_103",
+   40,
+   false,
+   "ReturnValue",
+   "InputPin"
+  ],
+  [
+   "K2Node_CallFunction_10",
+   40,
+   "K2Node_CallFunction_11",
+   40,
+   true,
+   "then",
+   "execute"
+  ],
+  [
+   "K2Node_CallFunction_10",
+   64,
+   "K2Node_Knot_101",
+   40,
+   false,
+   "ReturnValue",
+   "InputPin"
+  ],
+  [
+   "K2Node_CallFunction_11",
+   40,
+   "K2Node_CallFunction_12",
+   40,
+   true,
+   "then",
+   "execute"
+  ],
+  [
+   "K2Node_CallFunction_11",
+   64,
+   "K2Node_Knot_97",
+   40,
+   false,
+   "ReturnValue",
+   "InputPin"
+  ],
+  [
+   "K2Node_CallFunction_12",
+   40,
+   "K2Node_CallFunction_13",
+   40,
+   true,
+   "then",
+   "execute"
+  ],
+  [
+   "K2Node_CallFunction_12",
+   64,
+   "K2Node_Knot_93",
+   40,
+   false,
+   "ReturnValue",
+   "InputPin"
+  ],
+  [
+   "K2Node_CallFunction_13",
+   40,
+   "K2Node_CallFunction_14",
+   40,
+   true,
+   "then",
+   "execute"
+  ],
+  [
+   "K2Node_CallFunction_13",
+   64,
+   "K2Node_Knot_89",
+   40,
+   false,
+   "ReturnValue",
+   "InputPin"
+  ],
+  [
+   "K2Node_CallFunction_14",
+   40,
+   "K2Node_CallFunction_5",
+   40,
+   true,
+   "then",
+   "execute"
+  ],
+  [
+   "K2Node_CallFunction_14",
+   64,
+   "K2Node_Knot_85",
+   40,
+   false,
+   "ReturnValue",
+   "InputPin"
+  ],
+  [
+   "K2Node_CallFunction_5",
+   40,
+   "K2Node_CallFunction_6",
+   40,
+   true,
+   "then",
+   "execute"
+  ],
+  [
+   "K2Node_CallFunction_5",
+   64,
+   "K2Node_Knot_83",
+   40,
+   false,
+   "ReturnValue",
+   "InputPin"
+  ],
+  [
+   "K2Node_CallFunction_23",
+   40,
+   "K2Node_VariableSet_1",
+   40,
+   true,
+   "then",
+   "execute"
+  ],
+  [
+   "K2Node_VariableGet_5",
+   40,
+   "K2Node_CallFunction_23",
+   400,
+   false,
+   "Color String",
+   "DyeColors"
+  ],
+  [
+   "K2Node_VariableGet_6",
+   40,
+   "K2Node_CallFunction_23",
+   424,
+   false,
+   "Crafting Cost String",
+   "CraftingCost"
+  ],
+  [
+   "K2Node_VariableGet_0",
+   40,
+   "K2Node_IfThenElse_1",
+   40,
+   true,
+   "then",
+   "execute"
+  ],
+  [
+   "K2Node_VariableGet_0",
+   88,
+   "K2Node_Knot_95",
+   40,
+   false,
+   "Manager",
+   "InputPin"
+  ],
+  [
+   "K2Node_CallFunction_26",
+   40,
+   "K2Node_CallFunction_15",
+   40,
+   true,
+   "then",
+   "execute"
+  ],
+  [
+   "K2Node_CallFunction_27",
+   40,
+   "K2Node_IfThenElse_0",
+   40,
+   true,
+   "then",
+   "execute"
+  ],
+  [
+   "K2Node_CallFunction_27",
+   64,
+   "K2Node_Knot_63",
+   40,
+   false,
+   "ReturnValue",
+   "InputPin"
+  ],
+  [
+   "K2Node_CallFunction_27",
+   64,
+   "K2Node_Knot_113",
+   40,
+   false,
+   "ReturnValue",
+   "InputPin"
+  ],
+  [
+   "K2Node_CallFunction_2",
+   40,
+   "K2Node_Knot_39",
+   40,
+   false,
+   "ItemID1",
+   "InputPin"
+  ],
+  [
+   "K2Node_CallFunction_2",
+   64,
+   "K2Node_Knot_56",
+   40,
+   false,
+   "ItemID2",
+   "InputPin"
+  ],
+  [
+   "K2Node_VariableGet_9",
+   40,
+   "K2Node_CallFunction_26",
+   88,
+   false,
+   "OriginalPlacerPlayerID",
+   "Owner"
+  ],
+  [
+   "K2Node_VariableGet_7",
+   40,
+   "K2Node_CallFunction_23",
+   88,
+   false,
+   "OriginalPlacerPlayerID",
+   "Owner"
+  ],
+  [
+   "K2Node_IfThenElse_0",
+   40,
+   "K2Node_CallFunction_7",
+   40,
+   true,
+   "then",
+   "execute"
+  ],
+  [
+   "K2Node_IfThenElse_0",
+   64,
+   "K2Node_Knot_18",
+   40,
+   true,
+   "else",
+   "InputPin"
+  ],
+  [
+   "K2Node_CommutativeAssociativeBinaryOperator_32",
+   40,
+   "K2Node_CommutativeAssociativeBinaryOperator_34",
+   40,
+   false,
+   "ReturnValue",
+   "A"
+  ],
+  [
+   "K2Node_CommutativeAssociativeBinaryOperator_34",
+   40,
+   "K2Node_VariableSet_0",
+   64,
+   false,
+   "ReturnValue",
+   "Crafting Cost String"
+  ],
+  [
+   "K2Node_VariableSet_0",
+   64,
+   "K2Node_Knot_36",
+   40,
+   false,
+   "Output_Get",
+   "InputPin"
+  ],
+  [
+   "K2Node_VariableGet_16",
+   40,
+   "K2Node_CallFunction_26",
+   40,
+   true,
+   "then",
+   "execute"
+  ],
+  [
+   "K2Node_VariableGet_16",
+   88,
+   "K2Node_Knot_34",
+   40,
+   false,
+   "Manager",
+   "InputPin"
+  ],
+  [
+   "K2Node_MacroInstance_4",
+   40,
+   "K2Node_CallFunction_27",
+   40,
+   true,
+   "DedicatedServer",
+   "execute"
+  ],
+  [
+   "K2Node_MacroInstance_4",
+   64,
+   "K2Node_CallFunction_27",
+   40,
+   true,
+   "PlayerServer",
+   "execute"
+  ],
+  [
+   "K2Node_Self_0",
+   40,
+   "K2Node_VariableGet_9",
+   40,
+   false,
+   "self",
+   "self"
+  ],
+  [
+   "K2Node_Self_1",
+   40,
+   "K2Node_CallFunction_27",
+   64,
+   false,
+   "self",
+   "PrimalStructure"
+  ],
+  [
+   "K2Node_Self_2",
+   40,
+   "K2Node_VariableGet_7",
+   40,
+   false,
+   "self",
+   "self"
+  ],
+  [
+   "K2Node_VariableSet_1",
+   40,
+   "K2Node_VariableSet_3",
+   40,
+   true,
+   "then",
+   "execute"
+  ],
+  [
+   "K2Node_VariableSet_3",
+   40,
+   "K2Node_CallFunction_19",
+   40,
+   true,
+   "then",
+   "execute"
+  ],
+  [
+   "K2Node_CallFunction_3",
+   40,
+   "K2Node_CallFunction_4",
+   64,
+   false,
+   "Key",
+   "ItemToFind"
+  ],
+  [
+   "K2Node_VariableGet_1",
+   40,
+   "K2Node_CallFunction_4",
+   40,
+   false,
+   "KnownBlueprintKeys",
+   "TargetSet"
+  ],
+  [
+   "K2Node_CallFunction_4",
+   40,
+   "K2Node_IfThenElse_1",
+   64,
+   false,
+   "ReturnValue",
+   "Condition"
+  ],
+  [
+   "K2Node_IfThenElse_1",
+   64,
+   "K2Node_CallFunction_23",
+   40,
+   true,
+   "else",
+   "execute"
+  ],
+  [
+   "K2Node_CallFunction_15",
+   40,
+   "K2Node_CallFunction_21",
+   40,
+   true,
+   "then",
+   "execute"
+  ],
+  [
+   "K2Node_VariableGet_3",
+   40,
+   "K2Node_CallFunction_15",
+   64,
+   false,
+   "KnownBlueprintKeys",
+   "TargetSet"
+  ],
+  [
+   "K2Node_CallFunction_17",
+   40,
+   "K2Node_CallFunction_15",
+   88,
+   false,
+   "Key",
+   "Item"
+  ],
+  [
+   "K2Node_Knot_4",
+   40,
+   "K2Node_MacroInstance_3",
+   88,
+   true,
+   "OutputPin",
+   "Break"
+  ],
+  [
+   "K2Node_Knot_13",
+   40,
+   "K2Node_Knot_4",
+   40,
+   true,
+   "OutputPin",
+   "InputPin"
+  ],
+  [
+   "K2Node_Knot_18",
+   40,
+   "K2Node_VariableGet_16",
+   40,
+   true,
+   "OutputPin",
+   "execute"
+  ],
+  [
+   "K2Node_Knot_19",
+   40,
+   "K2Node_MacroInstance_2",
+   88,
+   true,
+   "OutputPin",
+   "Break"
+  ],
+  [
+   "K2Node_Knot_21",
+   40,
+   "K2Node_Knot_19",
+   40,
+   true,
+   "OutputPin",
+   "InputPin"
+  ],
+  [
+   "K2Node_Knot_22",
+   40,
+   "K2Node_ExecutionSequence_7",
+   40,
+   true,
+   "OutputPin",
+   "execute"
+  ],
+  [
+   "K2Node_Knot_23",
+   40,
+   "K2Node_ExecutionSequence_3",
+   40,
+   true,
+   "OutputPin",
+   "execute"
+  ],
+  [
+   "K2Node_Knot_24",
+   40,
+   "K2Node_Knot_25",
+   40,
+   false,
+   "OutputPin",
+   "InputPin"
+  ],
+  [
+   "K2Node_Knot_25",
+   40,
+   "K2Node_CommutativeAssociativeBinaryOperator_21",
+   40,
+   false,
+   "OutputPin",
+   "A"
+  ],
+  [
+   "K2Node_Knot_26",
+   40,
+   "K2Node_Knot_30",
+   40,
+   false,
+   "OutputPin",
+   "InputPin"
+  ],
+  [
+   "K2Node_Knot_30",
+   40,
+   "K2Node_IfThenElse_0",
+   64,
+   false,
+   "OutputPin",
+   "Condition"
+  ],
+  [
+   "K2Node_Knot_31",
+   40,
+   "K2Node_CallFunction_42",
+   40,
+   false,
+   "OutputPin",
+   "InInt"
+  ],
+  [
+   "K2Node_Knot_32",
+   40,
+   "K2Node_Knot_33",
+   40,
+   false,
+   "OutputPin",
+   "InputPin"
+  ],
+  [
+   "K2Node_Knot_33",
+   40,
+   "K2Node_CallFunction_16",
+   88,
+   false,
+   "OutputPin",
+   "InColor"
+  ],
+  [
+   "K2Node_Knot_34",
+   40,
+   "K2Node_Knot_35",
+   40,
+   false,
+   "OutputPin",
+   "InputPin"
+  ],
+  [
+   "K2Node_Knot_35",
+   40,
+   "K2Node_CallFunction_26",
+   64,
+   false,
+   "OutputPin",
+   "self"
+  ],
+  [
+   "K2Node_Knot_36",
+   40,
+   "K2Node_Knot_37",
+   40,
+   false,
+   "OutputPin",
+   "InputPin"
+  ],
+  [
+   "K2Node_Knot_37",
+   40,
+   "K2Node_CommutativeAssociativeBinaryOperator_36",
+   40,
+   false,
+   "OutputPin",
+   "A"
+  ],
+  [
+   "K2Node_Knot_39",
+   40,
+   "K2Node_Knot_40",
+   40,
+   false,
+   "OutputPin",
+   "InputPin"
+  ],
+  [
+   "K2Node_Knot_39",
+   40,
+   "K2Node_CallFunction_26",
+   112,
+   false,
+   "OutputPin",
+   "ItemID1"
+  ],
+  [
+   "K2Node_Knot_40",
+   40,
+   "K2Node_CallFunction_17",
+   40,
+   false,
+   "OutputPin",
+   "ItemID1"
+  ],
+  [
+   "K2Node_Knot_56",
+   40,
+   "K2Node_Knot_57",
+   40,
+   false,
+   "OutputPin",
+   "InputPin"
+  ],
+  [
+   "K2Node_Knot_56",
+   40,
+   "K2Node_CallFunction_26",
+   136,
+   false,
+   "OutputPin",
+   "ItemID2"
+  ],
+  [
+   "K2Node_Knot_57",
+   40,
+   "K2Node_CallFunction_17",
+   64,
+   false,
+   "OutputPin",
+   "ItemID2"
+  ],
+  [
+   "K2Node_Knot_58",
+   40,
+   "K2Node_CommutativeAssociativeBinaryOperator_36",
+   64,
+   false,
+   "OutputPin",
+   "B"
+  ],
+  [
+   "K2Node_Knot_59",
+   40,
+   "K2Node_Knot_60",
+   40,
+   false,
+   "OutputPin",
+   "InputPin"
+  ],
+  [
+   "K2Node_Knot_60",
+   40,
+   "K2Node_CallFunction_23",
+   112,
+   false,
+   "OutputPin",
+   "Class"
+  ],
+  [
+   "K2Node_Knot_61",
+   40,
+   "K2Node_BreakStruct_2",
+   40,
+   false,
+   "OutputPin",
+   "CraftingResourceRequirement"
+  ],
+  [
+   "K2Node_Knot_63",
+   40,
+   "K2Node_Knot_66",
+   40,
+   false,
+   "OutputPin",
+   "InputPin"
+  ],
+  [
+   "K2Node_Knot_66",
+   40,
+   "K2Node_CallFunction_23",
+   448,
+   false,
+   "OutputPin",
+   "StructureID"
+  ],
+  [
+   "K2Node_Knot_67",
+   40,
+   "K2Node_Knot_116",
+   40,
+   false,
+   "OutputPin",
+   "InputPin"
+  ],
+  [
+   "K2Node_Knot_68",
+   40,
+   "K2Node_CallFunction_1",
+   40,
+   false,
+   "OutputPin",
+   "Object"
+  ],
+  [
+   "K2Node_Knot_68",
+   40,
+   "K2Node_Knot_69",
+   40,
+   false,
+   "OutputPin",
+   "InputPin"
+  ],
+  [
+   "K2Node_Knot_69",
+   40,
+   "K2Node_CallFunction_8",
+   64,
+   false,
+   "OutputPin",
+   "self"
+  ],
+  [
+   "K2Node_Knot_69",
+   40,
+   "K2Node_Knot_71",
+   40,
+   false,
+   "OutputPin",
+   "InputPin"
+  ],
+  [
+   "K2Node_Knot_71",
+   40,
+   "K2Node_CallFunction_9",
+   64,
+   false,
+   "OutputPin",
+   "self"
+  ],
+  [
+   "K2Node_Knot_71",
+   40,
+   "K2Node_Knot_72",
+   40,
+   false,
+   "OutputPin",
+   "InputPin"
+  ],
+  [
+   "K2Node_Knot_72",
+   40,
+   "K2Node_CallFunction_10",
+   64,
+   false,
+   "OutputPin",
+   "self"
+  ],
+  [
+   "K2Node_Knot_72",
+   40,
+   "K2Node_Knot_73",
+   40,
+   false,
+   "OutputPin",
+   "InputPin"
+  ],
+  [
+   "K2Node_Knot_73",
+   40,
+   "K2Node_CallFunction_11",
+   64,
+   false,
+   "OutputPin",
+   "self"
+  ],
+  [
+   "K2Node_Knot_73",
+   40,
+   "K2Node_Knot_74",
+   40,
+   false,
+   "OutputPin",
+   "InputPin"
+  ],
+  [
+   "K2Node_Knot_74",
+   40,
+   "K2Node_CallFunction_12",
+   64,
+   false,
+   "OutputPin",
+   "self"
+  ],
+  [
+   "K2Node_Knot_74",
+   40,
+   "K2Node_Knot_75",
+   40,
+   false,
+   "OutputPin",
+   "InputPin"
+  ],
+  [
+   "K2Node_Knot_75",
+   40,
+   "K2Node_CallFunction_13",
+   64,
+   false,
+   "OutputPin",
+   "self"
+  ],
+  [
+   "K2Node_Knot_75",
+   40,
+   "K2Node_Knot_76",
+   40,
+   false,
+   "OutputPin",
+   "InputPin"
+  ],
+  [
+   "K2Node_Knot_76",
+   40,
+   "K2Node_CallFunction_14",
+   64,
+   false,
+   "OutputPin",
+   "self"
+  ],
+  [
+   "K2Node_Knot_76",
+   40,
+   "K2Node_Knot_77",
+   40,
+   false,
+   "OutputPin",
+   "InputPin"
+  ],
+  [
+   "K2Node_Knot_77",
+   40,
+   "K2Node_CallFunction_5",
+   64,
+   false,
+   "OutputPin",
+   "self"
+  ],
+  [
+   "K2Node_Knot_77",
+   40,
+   "K2Node_Knot_78",
+   40,
+   false,
+   "OutputPin",
+   "InputPin"
+  ],
+  [
+   "K2Node_Knot_78",
+   40,
+   "K2Node_CallFunction_6",
+   64,
+   false,
+   "OutputPin",
+   "self"
+  ],
+  [
+   "K2Node_Knot_78",
+   40,
+   "K2Node_Knot_79",
+   40,
+   false,
+   "OutputPin",
+   "InputPin"
+  ],
+  [
+   "K2Node_Knot_79",
+   40,
+   "K2Node_CallFunction_48",
+   64,
+   false,
+   "OutputPin",
+   "self"
+  ],
+  [
+   "K2Node_Knot_79",
+   40,
+   "K2Node_Knot_81",
+   40,
+   false,
+   "OutputPin",
+   "InputPin"
+  ],
+  [
+   "K2Node_Knot_81",
+   40,
+   "K2Node_VariableGet_2",
+   40,
+   false,
+   "OutputPin",
+   "self"
+  ],
+  [
+   "K2Node_Knot_81",
+   40,
+   "K2Node_Knot_117",
+   40,
+   false,
+   "OutputPin",
+   "InputPin"
+  ],
+  [
+   "K2Node_Knot_82",
+   40,
+   "K2Node_CallFunction_63",
+   40,
+   false,
+   "OutputPin",
+   "InDouble"
+  ],
+  [
+   "K2Node_Knot_83",
+   40,
+   "K2Node_Knot_84",
+   40,
+   false,
+   "OutputPin",
+   "InputPin"
+  ],
+  [
+   "K2Node_Knot_84",
+   40,
+   "K2Node_CallFunction_23",
+   208,
+   false,
+   "OutputPin",
+   "GenericQuality"
+  ],
+  [
+   "K2Node_Knot_85",
+   40,
+   "K2Node_Knot_86",
+   40,
+   false,
+   "OutputPin",
+   "InputPin"
+  ],
+  [
+   "K2Node_Knot_86",
+   40,
+   "K2Node_CallFunction_23",
+   232,
+   false,
+   "OutputPin",
+   "Armor"
+  ],
+  [
+   "K2Node_Knot_87",
+   40,
+   "K2Node_Knot_88",
+   40,
+   false,
+   "OutputPin",
+   "InputPin"
+  ],
+  [
+   "K2Node_Knot_88",
+   40,
+   "K2Node_CallFunction_23",
+   160,
+   false,
+   "OutputPin",
+   "ItemID1"
+  ],
+  [
+   "K2Node_Knot_89",
+   40,
+   "K2Node_Knot_90",
+   40,
+   false,
+   "OutputPin",
+   "InputPin"
+  ],
+  [
+   "K2Node_Knot_90",
+   40,
+   "K2Node_CallFunction_23",
+   256,
+   false,
+   "OutputPin",
+   "MaxDurability"
+  ],
+  [
+   "K2Node_Knot_91",
+   40,
+   "K2Node_Knot_92",
+   40,
+   false,
+   "OutputPin",
+   "InputPin"
+  ],
+  [
+   "K2Node_Knot_92",
+   40,
+   "K2Node_CallFunction_23",
+   184,
+   false,
+   "OutputPin",
+   "ItemID2"
+  ],
+  [
+   "K2Node_Knot_93",
+   40,
+   "K2Node_Knot_94",
+   40,
+   false,
+   "OutputPin",
+   "InputPin"
+  ],
+  [
+   "K2Node_Knot_94",
+   40,
+   "K2Node_CallFunction_23",
+   280,
+   false,
+   "OutputPin",
+   "WeaponDamagePercent"
+  ],
+  [
+   "K2Node_Knot_95",
+   40,
+   "K2Node_Knot_96",
+   40,
+   false,
+   "OutputPin",
+   "InputPin"
+  ],
+  [
+   "K2Node_Knot_96",
+   40,
+   "K2Node_CallFunction_23",
+   64,
+   false,
+   "OutputPin",
+   "self"
+  ],
+  [
+   "K2Node_Knot_97",
+   40,
+   "K2Node_Knot_98",
+   40,
+   false,
+   "OutputPin",
+   "InputPin"
+  ],
+  [
+   "K2Node_Knot_98",
+   40,
+   "K2Node_CallFunction_23",
+   304,
+   false,
+   "OutputPin",
+   "WeaponClipAmmo"
+  ],
+  [
+   "K2Node_Knot_101",
+   40,
+   "K2Node_Knot_102",
+   40,
+   false,
+   "OutputPin",
+   "InputPin"
+  ],
+  [
+   "K2Node_Knot_102",
+   40,
+   "K2Node_CallFunction_23",
+   328,
+   false,
+   "OutputPin",
+   "HypothermalInsulation"
+  ],
+  [
+   "K2Node_Knot_103",
+   40,
+   "K2Node_Knot_104",
+   40,
+   false,
+   "OutputPin",
+   "InputPin"
+  ],
+  [
+   "K2Node_Knot_104",
+   40,
+   "K2Node_CallFunction_23",
+   352,
+   false,
+   "OutputPin",
+   "Weight"
+  ],
+  [
+   "K2Node_Knot_105",
+   40,
+   "K2Node_Knot_106",
+   40,
+   false,
+   "OutputPin",
+   "InputPin"
+  ],
+  [
+   "K2Node_Knot_106",
+   40,
+   "K2Node_CallFunction_23",
+   376,
+   false,
+   "OutputPin",
+   "HyperthermalInsulation"
+  ],
+  [
+   "K2Node_Knot_107",
+   40,
+   "K2Node_Knot_108",
+   40,
+   true,
+   "OutputPin",
+   "InputPin"
+  ],
+  [
+   "K2Node_Knot_108",
+   40,
+   "K2Node_Knot_13",
+   40,
+   true,
+   "OutputPin",
+   "InputPin"
+  ],
+  [
+   "K2Node_Knot_113",
+   40,
+   "K2Node_Knot_114",
+   40,
+   false,
+   "OutputPin",
+   "InputPin"
+  ],
+  [
+   "K2Node_Knot_114",
+   40,
+   "K2Node_CallFunction_26",
+   160,
+   false,
+   "OutputPin",
+   "StructureID"
+  ],
+  [
+   "K2Node_Knot_116",
+   40,
+   "K2Node_Knot_68",
+   40,
+   false,
+   "OutputPin",
+   "InputPin"
+  ],
+  [
+   "K2Node_Knot_116",
+   40,
+   "K2Node_CallFunction_2",
+   40,
+   false,
+   "OutputPin",
+   "self"
+  ],
+  [
+   "K2Node_Knot_117",
+   40,
+   "K2Node_CallFunction_0",
+   40,
+   false,
+   "OutputPin",
+   "self"
+  ],
+  [
+   "K2Node_Knot_118",
+   40,
+   "K2Node_Knot_119",
+   40,
+   true,
+   "OutputPin",
+   "InputPin"
+  ],
+  [
+   "K2Node_Knot_119",
+   40,
+   "K2Node_Knot_21",
+   40,
+   true,
+   "OutputPin",
+   "InputPin"
+  ]
+ ],
+ "cases": [
+  {
+   "name": "REMOVE path feeders (nearby source)",
+   "movable": [
+    "K2Node_VariableGet_3",
+    "K2Node_CallFunction_17"
+   ]
+  },
+  {
+   "name": "ADD path dedup check (inputs already on lanes near the consumer)",
+   "movable": [
+    "K2Node_CallFunction_3",
+    "K2Node_VariableGet_1",
+    "K2Node_CallFunction_4"
+   ]
+  }
+ ]
+}

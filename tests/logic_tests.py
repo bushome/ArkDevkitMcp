@@ -470,6 +470,8 @@ def test_ladder_insert_case():
     r = place_ladder(fx["nodes"], [tuple(e) for e in fx["edges"]], fx["movable"])
     hand = fx["hand"]
     check(not r["fallback"], "ladder: no node fell back to plain placement")
+    check(r["decisions"] and r["decisions"][0]["placement"] == "at source",
+          f"ladder: inputs only exist far away, so the check is built at the source: {r['decisions']}")
     for k in fx["movable"]:
         x, y = r["positions"][k]
         check(abs(x - hand[k][0]) <= 64 and abs(y - hand[k][1]) <= 32, f"ladder: new node {k} {(x, y)} vs hand {hand[k]}")
@@ -506,6 +508,27 @@ def test_toon():
     check(toon.dumps([]) == "items[0]:" and toon.dumps("x") == "x", "toon edge cases")
 
 
+def test_placement_choice_cases():
+    """Sean's reworked graph: nodes he placed are removed and re-placed; the fewest-new-long-wires rule must choose
+    'beside consumer' here and land within tolerance. (The first ADD pass, where it must choose 'at source', is
+    covered by test_ladder_insert_case.)"""
+    from arkmcp.layout import place_ladder
+    with open(os.path.join(ROOT, "tests", "captures", "cloudbshelf_training_rework_fixture.json"), encoding="utf-8") as f:
+        fx = json.load(f)
+    for case in fx["cases"]:
+        nodes = {k: dict(v) for k, v in fx["nodes"].items()}
+        hand = {k: (nodes[k]["x"], nodes[k]["y"]) for k in case["movable"]}
+        for k in case["movable"]:
+            nodes[k]["x"] = nodes[k]["y"] = 0
+        r = place_ladder(nodes, [tuple(e) for e in fx["edges"]], case["movable"])
+        check(all(d["placement"] == "beside consumer" for d in r["decisions"]),
+              f"[{case['name']}] chooses beside consumer: {r['decisions']}")
+        for k in case["movable"]:
+            x, y = r["positions"][k]
+            check(abs(x - hand[k][0]) <= 64 and abs(y - hand[k][1]) <= 40,
+                  f"[{case['name']}] {k} {(x, y)} vs hand {hand[k]}")
+
+
 def test_shipped():
     plain = config.load_json_with_comments(os.path.join(ROOT, "configs", "config.json"))
     commented = config.load_json_with_comments(os.path.join(ROOT, "configs", "config.commented.json"))
@@ -515,7 +538,7 @@ def test_shipped():
 
 
 if __name__ == "__main__":
-    for t in (test_typespec, test_config, test_protocol, test_mcp, test_editor_module, test_tool_table, test_layout, test_connection_failures, test_layout_cases, test_ladder_insert_case, test_toon):
+    for t in (test_typespec, test_config, test_protocol, test_mcp, test_editor_module, test_tool_table, test_layout, test_connection_failures, test_layout_cases, test_ladder_insert_case, test_toon, test_placement_choice_cases):
         t()
     if "--shipped" in sys.argv:
         test_shipped()

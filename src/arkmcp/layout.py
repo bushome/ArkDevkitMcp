@@ -370,6 +370,83 @@ SOURCE_OFFSET = 640      # chain starts this far right of its rightmost source n
 CHAIN_GAP = 24           # gap between nodes of a source-anchored chain
 LANE_MIN = 800           # results travelling further than this get a knot lane
 LANE_KNOT_BEFORE = 560   # knot sits this far left of the consumer
+FAR_LANE = 2000          # a wire longer than this needs its own lane (counts as a "long wire" when choosing placement)
+SINK_GAP = 48            # gap between a feeder column and the consumer it feeds
+COL_GAP = 32             # gap between feeder columns
+STACK_GAP = 16           # vertical gap between stacked feeders
+
+# Placement choice (Sean, 2026-11-22): put a data computation wherever it needs the fewest NEW long wires.
+#   beside the consumer: each input whose value only exists far away (no lane/knot carrying it near the consumer)
+#                        costs one new lane;
+#   at the source:       each result that then has to travel far to its consumer costs one new lane.
+# Ties go beside the consumer (keeps the progression easiest to follow). Beside the consumer, feeders stack in
+# tight columns left of the pin they feed, top to bottom in pin order, below the exec lane.
+
+
+def _value_reach(src, succs, nodes, pos, limit_x):
+    """Rightmost x (<= limit_x) at which the value leaving `src` is available: follow knot-to-knot lanes forward."""
+    best, seen, stack = pos[src][0], set(), [src]
+    while stack:
+        k = stack.pop()
+        if k in seen:
+            continue
+        seen.add(k)
+        if pos[k][0] <= limit_x:
+            best = max(best, pos[k][0])
+        for e in succs[k]:
+            if nodes.get(e[2], {}).get("knot") and e[2] in pos:
+                stack.append(e[2])
+    return best
+
+
+def _place_beside_consumer(grp, gset, nodes, preds, succs, pos, gap_y, grid):
+    exits = [e for k in grp for e in succs[k] if e[2] not in gset and e[2] in pos]
+    out, columns = {}, []
+    level = sorted({e[0] for e in exits}, key=lambda k: min((pos[e[2]][0], e[3]) for e in exits if e[0] == k))
+    placed_ids = set()
+    while level:
+        columns.append(level)
+        placed_ids.update(level)
+        nxt = []
+        for k in level:
+            for e in sorted(preds[k], key=lambda e: e[3]):
+                if e[0] in gset and e[0] not in placed_ids and e[0] not in nxt:
+                    nxt.append(e[0])
+        level = nxt
+    right_edge = None
+    for ci, col in enumerate(columns):
+        w = max(nodes[k]["w"] for k in col)
+        if ci == 0:
+            c = min((pos[e[2]][0] for e in exits))
+            x = c - w - SINK_GAP
+        else:
+            x = right_edge - w - COL_GAP
+        bottom = None
+        for k in col:
+            # the pin this node feeds: in the consumer (column 0) or in an already placed group node
+            feeds = [e for e in succs[k] if e[2] in out or (ci == 0 and e[2] not in gset and e[2] in pos)]
+            feeds.sort(key=lambda e: e[3])
+            if feeds:
+                e = feeds[0]
+                ty = out[e[2]][1] if e[2] in out else pos[e[2]][1]
+                want = ty + e[3] - e[1]
+                consumer = e[2]
+                floor = ty + PIN_TOP + gap_y if nodes[consumer]["exec"] else ty
+            else:
+                want = floor = (bottom if bottom is not None else 0)
+            y = max(want, floor)
+            if bottom is not None:
+                y = max(y, bottom + STACK_GAP)
+            out[k] = (x, y)
+            bottom = y + nodes[k]["h"]
+        right_edge = x
+    # never on top of an existing node: move the whole group down until it is clear
+    rects = [(pos[f][0], pos[f][1], nodes[f]["w"], nodes[f]["h"]) for f in pos if f not in gset]
+    for _ in range(80):
+        if not any(_overlaps(x, y, nodes[k]["w"], nodes[k]["h"], rects, 8) for k, (x, y) in out.items()):
+            break
+        out = {k: (x, y + 8) for k, (x, y) in out.items()}
+    return {k: (_snap(x, grid), _snap(y, grid)) for k, (x, y) in out.items()}
 
 
 def _exec_downstream(start, succs, fixed):
@@ -457,15 +534,31 @@ def place_ladder(nodes, edges, movable, make_room=True, result_lanes=True, gap_x
             stack.extend(e[0] for e in preds[k])
             stack.extend(e[2] for e in succs[k])
         groups.append(grp)
-    fallback = []
+    fallback, decisions = [], []
     for grp in groups:
         gset = set(grp)
         sources = {e[0] for k in grp for e in preds[k] if e[0] not in gset and e[0] in pos}
         exits = [e for k in grp for e in succs[k] if e[2] not in gset and e[2] in pos]
         consumer_x = min((pos[e[2]][0] for e in exits), default=None)
-        if not sources or consumer_x is None or consumer_x - max(pos[s][0] for s in sources) < FAR_SOURCE:
-            fallback.extend(grp)
+        if consumer_x is None:
+            fallback.extend(grp)          # feeds nothing placed yet
             continue
+        in_edges = [e for k in grp for e in preds[k] if e[0] not in gset and e[0] in pos]
+        cost_consumer = sum(1 for e in in_edges
+                            if consumer_x - _value_reach(e[0], succs, nodes, pos, consumer_x) >= FAR_LANE)
+        src_x = max((pos[s][0] for s in sources), default=consumer_x) + SOURCE_OFFSET
+        chain_w = sum(nodes[k]["w"] + CHAIN_GAP for k in grp)
+        cost_source = sum(1 for e in exits if pos[e[2]][0] - (src_x + chain_w) >= FAR_LANE) if sources else 99
+        if cost_consumer <= cost_source:
+            got = _place_beside_consumer(grp, gset, nodes, preds, succs, pos, gap_y, grid)
+            for k, v in got.items():
+                pos[k] = list(v)
+                placed[k] = v
+            decisions.append({"group": grp, "placement": "beside consumer",
+                              "new_long_wires": {"beside_consumer": cost_consumer, "at_source": cost_source}})
+            continue
+        decisions.append({"group": grp, "placement": "at source",
+                          "new_long_wires": {"beside_consumer": cost_consumer, "at_source": cost_source}})
         # order: dependency order; among ready nodes, those fed from outside first
         order, done = [], set()
         while len(order) < len(grp):
@@ -512,4 +605,4 @@ def place_ladder(nodes, edges, movable, make_room=True, result_lanes=True, gap_x
     positions = dict(placed)
     for b in shifted:
         positions[b] = tuple(pos[b])
-    return {"positions": positions, "shifted": shifted, "lanes": lanes, "fallback": fallback}
+    return {"positions": positions, "shifted": shifted, "lanes": lanes, "fallback": fallback, "decisions": decisions}

@@ -1040,6 +1040,7 @@ def t_tidy_graph(a):
     if a.get("export_geometry"):
         return {"nodes": geo, "edges": [list(e) for e in edges]}
 
+    decisions = []
     wanted = a.get("nodes")
     gx, gy = a.get("gap_x", 48), a.get("gap_y", 16)
     if wanted:
@@ -1052,6 +1053,7 @@ def t_tidy_graph(a):
             # knot lanes for results that travel far. Opt-in only.
             plan = place_ladder(geo, edges, wanted, make_room=True, result_lanes=True, gap_x=a.get("gap_x", 96), gap_y=gy)
             positions, lanes = plan["positions"], plan["lanes"]
+            decisions = plan.get("decisions", [])
             mode = "ladder"
         else:
             # place only these; every other node stays put and is an obstacle  (layout.py)
@@ -1096,7 +1098,7 @@ def t_tidy_graph(a):
         moved = {k: list(v) for k, v in positions.items()}
         knots = [{"pos": [l["x"], l["y"]], "carries": f"{l['src']}.{l['src_pin']} -> {l['dst']}.{l['dst_pin']}"}
                  for l in lanes]
-    return {"mode": mode, "moved": moved, "lane_knots": knots, "dry_run": bool(a.get("dry_run")),
+    return {"mode": mode, "moved": moved, "lane_knots": knots, "placement": decisions, "dry_run": bool(a.get("dry_run")),
             "sizes_used": {k: [round(geo[k]["w"]), round(geo[k]["h"])] for k in moved if k in geo},
             "note": "comment boxes are not moved; Ctrl+Z undoes the whole tidy"}
 

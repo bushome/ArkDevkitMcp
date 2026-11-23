@@ -1,0 +1,538 @@
+{
+ "graph": "/ArkMCPTesting/CloudBshelf_Training:EventGraph",
+ "arranged_by": "Sean, 2026-11-22 (after REMOVE dedup + cleanup)",
+ "positions": {
+  "K2Node_Event_3": [
+   112,
+   808
+  ],
+  "K2Node_CallParentFunction_0": [
+   496,
+   624
+  ],
+  "K2Node_VariableGet_2": [
+   7554,
+   2194
+  ],
+  "K2Node_CallFunction_0": [
+   7128,
+   1880
+  ],
+  "K2Node_CallFunction_48": [
+   5294,
+   1335
+  ],
+  "K2Node_CommutativeAssociativeBinaryOperator_30": [
+   6899,
+   1419
+  ],
+  "K2Node_BreakStruct_2": [
+   6016,
+   1456
+  ],
+  "K2Node_CallFunction_62": [
+   6113,
+   1350
+  ],
+  "K2Node_CallFunction_63": [
+   6968,
+   1540
+  ],
+  "K2Node_CommutativeAssociativeBinaryOperator_36": [
+   6680,
+   1419
+  ],
+  "K2Node_MacroInstance_2": [
+   5689,
+   1350
+  ],
+  "K2Node_ExecutionSequence_3": [
+   6641,
+   1726
+  ],
+  "K2Node_CallFunction_6": [
+   4265,
+   793
+  ],
+  "K2Node_MacroInstance_3": [
+   4631,
+   808
+  ],
+  "K2Node_CallFunction_16": [
+   5816,
+   877
+  ],
+  "K2Node_CommutativeAssociativeBinaryOperator_0": [
+   5597,
+   877
+  ],
+  "K2Node_ExecutionSequence_7": [
+   5059,
+   1318
+  ],
+  "K2Node_CommutativeAssociativeBinaryOperator_21": [
+   5059,
+   877
+  ],
+  "K2Node_CallFunction_42": [
+   5429,
+   998
+  ],
+  "K2Node_CommutativeAssociativeBinaryOperator_28": [
+   5296,
+   877
+  ],
+  "K2Node_CallFunction_106": [
+   7834,
+   2194
+  ],
+  "K2Node_CallFunction_1": [
+   1495,
+   926
+  ],
+  "K2Node_VariableSet_2": [
+   6086,
+   824
+  ],
+  "K2Node_CallFunction_7": [
+   1495,
+   808
+  ],
+  "K2Node_CallFunction_8": [
+   1817,
+   793
+  ],
+  "K2Node_CallFunction_9": [
+   2123,
+   793
+  ],
+  "K2Node_CallFunction_10": [
+   2429,
+   793
+  ],
+  "K2Node_CallFunction_11": [
+   2735,
+   793
+  ],
+  "K2Node_CallFunction_12": [
+   3041,
+   793
+  ],
+  "K2Node_CallFunction_13": [
+   3347,
+   793
+  ],
+  "K2Node_CallFunction_14": [
+   3653,
+   793
+  ],
+  "K2Node_CallFunction_5": [
+   3959,
+   793
+  ],
+  "K2Node_CallFunction_23": [
+   8824,
+   2032
+  ],
+  "K2Node_VariableGet_5": [
+   7832,
+   2512
+  ],
+  "K2Node_VariableGet_6": [
+   7800,
+   2560
+  ],
+  "K2Node_VariableGet_0": [
+   6876,
+   1758
+  ],
+  "K2Node_CallFunction_26": [
+   2608,
+   296
+  ],
+  "K2Node_CallFunction_21": [
+   3470,
+   311
+  ],
+  "K2Node_CallFunction_27": [
+   777,
+   808
+  ],
+  "K2Node_CallFunction_2": [
+   1832,
+   464
+  ],
+  "K2Node_VariableGet_9": [
+   2238,
+   395
+  ],
+  "K2Node_VariableGet_7": [
+   7688,
+   2122
+  ],
+  "K2Node_IfThenElse_0": [
+   1130,
+   808
+  ],
+  "K2Node_CommutativeAssociativeBinaryOperator_32": [
+   7136,
+   1419
+  ],
+  "K2Node_CommutativeAssociativeBinaryOperator_34": [
+   7355,
+   1419
+  ],
+  "K2Node_VariableSet_0": [
+   7592,
+   1366
+  ],
+  "K2Node_VariableGet_16": [
+   1833,
+   311
+  ],
+  "K2Node_MacroInstance_4": [
+   491,
+   808
+  ],
+  "K2Node_CallFunction_19": [
+   9782,
+   2054
+  ],
+  "K2Node_Self_0": [
+   2066,
+   395
+  ],
+  "K2Node_Self_1": [
+   777,
+   926
+  ],
+  "K2Node_Self_2": [
+   7516,
+   2122
+  ],
+  "K2Node_VariableSet_1": [
+   9157,
+   2070
+  ],
+  "K2Node_VariableSet_3": [
+   9491,
+   2070
+  ],
+  "K2Node_CallFunction_3": [
+   7361,
+   1898
+  ],
+  "K2Node_VariableGet_1": [
+   7362,
+   1832
+  ],
+  "K2Node_CallFunction_4": [
+   7578,
+   1827
+  ],
+  "K2Node_IfThenElse_1": [
+   7852,
+   1758
+  ],
+  "K2Node_CallFunction_15": [
+   3188,
+   327
+  ],
+  "K2Node_VariableGet_3": [
+   2972,
+   380
+  ],
+  "K2Node_CallFunction_17": [
+   2971,
+   446
+  ],
+  "K2Node_Knot_4": [
+   4632,
+   668
+  ],
+  "K2Node_Knot_13": [
+   6223,
+   668
+  ],
+  "K2Node_Knot_18": [
+   1690,
+   344
+  ],
+  "K2Node_Knot_19": [
+   5690,
+   1250
+  ],
+  "K2Node_Knot_21": [
+   7773,
+   1250
+  ],
+  "K2Node_Knot_22": [
+   4916,
+   1351
+  ],
+  "K2Node_Knot_23": [
+   6042,
+   1759
+  ],
+  "K2Node_Knot_24": [
+   6196,
+   707
+  ],
+  "K2Node_Knot_25": [
+   5080,
+   707
+  ],
+  "K2Node_Knot_26": [
+   504,
+   980
+  ],
+  "K2Node_Knot_30": [
+   983,
+   980
+  ],
+  "K2Node_Knot_31": [
+   5027,
+   1007
+  ],
+  "K2Node_Knot_32": [
+   5027,
+   1052
+  ],
+  "K2Node_Knot_33": [
+   5733,
+   1052
+  ],
+  "K2Node_Knot_34": [
+   2032,
+   368
+  ],
+  "K2Node_Knot_35": [
+   2517,
+   365
+  ],
+  "K2Node_Knot_36": [
+   7745,
+   1290
+  ],
+  "K2Node_Knot_37": [
+   6701,
+   1290
+  ],
+  "K2Node_Knot_39": [
+   2353,
+   574
+  ],
+  "K2Node_Knot_40": [
+   2840,
+   574
+  ],
+  "K2Node_Knot_56": [
+   2353,
+   600
+  ],
+  "K2Node_Knot_57": [
+   2840,
+   600
+  ],
+  "K2Node_Knot_58": [
+   6365,
+   1414
+  ],
+  "K2Node_Knot_59": [
+   1758,
+   2164
+  ],
+  "K2Node_Knot_60": [
+   7943,
+   2172
+  ],
+  "K2Node_Knot_61": [
+   5941,
+   1412
+  ],
+  "K2Node_Knot_63": [
+   1135,
+   2606
+  ],
+  "K2Node_Knot_66": [
+   7943,
+   2606
+  ],
+  "K2Node_Knot_67": [
+   520,
+   1528
+  ],
+  "K2Node_Knot_68": [
+   1412,
+   1528
+  ],
+  "K2Node_Knot_69": [
+   1734,
+   1528
+  ],
+  "K2Node_Knot_71": [
+   2040,
+   1528
+  ],
+  "K2Node_Knot_72": [
+   2346,
+   1528
+  ],
+  "K2Node_Knot_73": [
+   2652,
+   1528
+  ],
+  "K2Node_Knot_74": [
+   2958,
+   1528
+  ],
+  "K2Node_Knot_75": [
+   3264,
+   1528
+  ],
+  "K2Node_Knot_76": [
+   3570,
+   1528
+  ],
+  "K2Node_Knot_77": [
+   3876,
+   1528
+  ],
+  "K2Node_Knot_78": [
+   4182,
+   1528
+  ],
+  "K2Node_Knot_79": [
+   5075,
+   1528
+  ],
+  "K2Node_Knot_81": [
+   5471,
+   2200
+  ],
+  "K2Node_Knot_82": [
+   6621,
+   1549
+  ],
+  "K2Node_Knot_83": [
+   4062,
+   2296
+  ],
+  "K2Node_Knot_84": [
+   7943,
+   2296
+  ],
+  "K2Node_Knot_85": [
+   3740,
+   2322
+  ],
+  "K2Node_Knot_86": [
+   7943,
+   2322
+  ],
+  "K2Node_Knot_87": [
+   7386,
+   2242
+  ],
+  "K2Node_Knot_88": [
+   7943,
+   2242
+  ],
+  "K2Node_Knot_89": [
+   3418,
+   2348
+  ],
+  "K2Node_Knot_90": [
+   7943,
+   2348
+  ],
+  "K2Node_Knot_91": [
+   7354,
+   2268
+  ],
+  "K2Node_Knot_92": [
+   7943,
+   2268
+  ],
+  "K2Node_Knot_93": [
+   3048,
+   2374
+  ],
+  "K2Node_Knot_94": [
+   7943,
+   2374
+  ],
+  "K2Node_Knot_95": [
+   7122,
+   2094
+  ],
+  "K2Node_Knot_96": [
+   7935,
+   2094
+  ],
+  "K2Node_Knot_97": [
+   2758,
+   2400
+  ],
+  "K2Node_Knot_98": [
+   7943,
+   2400
+  ],
+  "K2Node_Knot_101": [
+   2476,
+   2426
+  ],
+  "K2Node_Knot_102": [
+   7943,
+   2426
+  ],
+  "K2Node_Knot_103": [
+   2138,
+   2452
+  ],
+  "K2Node_Knot_104": [
+   7943,
+   2452
+  ],
+  "K2Node_Knot_105": [
+   1824,
+   2478
+  ],
+  "K2Node_Knot_106": [
+   7943,
+   2478
+  ],
+  "K2Node_Knot_107": [
+   5224,
+   1136
+  ],
+  "K2Node_Knot_108": [
+   6232,
+   1136
+  ],
+  "K2Node_Knot_113": [
+   1168,
+   696
+  ],
+  "K2Node_Knot_114": [
+   2336,
+   696
+  ],
+  "K2Node_Knot_116": [
+   752,
+   1528
+  ],
+  "K2Node_Knot_117": [
+   5864,
+   1928
+  ],
+  "K2Node_Knot_118": [
+   6848,
+   1696
+  ],
+  "K2Node_Knot_119": [
+   7768,
+   1696
+  ]
+ }
+}

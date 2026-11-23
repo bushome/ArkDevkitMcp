@@ -140,10 +140,13 @@ TOOLS = [
                              "ladder": {"type": "boolean", "description":
                                         "With nodes: follow the user's ladder conventions. An exec node inserted "
                                         "between two rail nodes goes ON the rail and the downstream rail block (and "
-                                        "its feeders) shifts right to make room; a data computation fed from far "
-                                        "away is built beside its source below the lowest lane; its result gets a "
-                                        "reroute-knot lane to the distant consumer. Moves existing nodes and adds "
-                                        "knots, so only use it when the user agrees. Try dry_run first."},
+                                        "its feeders) shifts right and re-levels to make room. A data computation goes "
+                                        "where it needs the fewest NEW long wires: beside its consumer (feeders stacked "
+                                        "in a column left of the pins they feed, in pin order) unless its inputs only "
+                                        "exist far away, in which case it is built at the source and its result gets a "
+                                        "reroute-knot lane to the consumer. The reply's 'placement' says which and why. "
+                                        "Moves existing nodes and adds knots, so only use it when the user agrees. "
+                                        "Try dry_run first."},
                              "dry_run": {"type": "boolean", "description": "Return positions without moving"},
                              "gap_x": {"type": "number"}, "gap_y": {"type": "number"}}, ["path"])},
     {"name": "add_node_pin",
